@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import type { Task } from '../types';
+import type { Task, TaskStatus } from '../types';
 import { tasks as mockTasks } from '../data/tasks';
 
 interface TaskState {
   tasks: Task[];
   updateTaskProgress: (taskId: string, progress: number, note?: string) => void;
+  moveTaskStatus: (taskId: string, newStatus: TaskStatus) => void;
 }
 
 export const useTaskStore = create<TaskState>((set) => ({
@@ -30,5 +31,25 @@ export const useTaskStore = create<TaskState>((set) => ({
           }
           : task
       )
-    }))
+    })),
+  moveTaskStatus: (taskId, newStatus) =>
+    set((state) => ({
+      tasks: state.tasks.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              status: newStatus,
+              activityLogs: [
+                ...task.activityLogs,
+                {
+                  id: `al-${Date.now()}`,
+                  userId: 'u1',
+                  action: `Moved to ${newStatus}`,
+                  createdAt: new Date().toISOString(),
+                },
+              ],
+            }
+          : task
+      ),
+    })),
 }));
