@@ -107,20 +107,20 @@ export default function Board() {
 
   return (
     <div className="flex flex-col h-full gap-6">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-center bg-white p-4 rounded-xl border border-slate-200">
-        <div className="relative w-full sm:w-64">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      {/* Page Header (Search & Filter) */}
+      <div className="flex flex-wrap items-center gap-3 bg-card p-4 rounded-xl border border-border">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input 
             placeholder="Search tasks..." 
-            className="pl-9 w-full"
+            className="pl-10 pr-4 py-2.5 bg-background border border-border rounded-xl w-full"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         
         <Select value={filterDesigner} onValueChange={(v) => v && setFilterDesigner(v)}>
-          <SelectTrigger className="w-full sm:w-40 flex-1">
+          <SelectTrigger className="w-[140px] lg:w-[160px] bg-background border border-border rounded-xl h-10">
             <SelectValue placeholder="Designer" />
           </SelectTrigger>
           <SelectContent>
@@ -132,7 +132,7 @@ export default function Board() {
         </Select>
 
         <Select value={filterCategory} onValueChange={(v) => v && setFilterCategory(v)}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-[140px] lg:w-[160px] bg-background border border-border rounded-xl h-10">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -143,17 +143,10 @@ export default function Board() {
           </SelectContent>
         </Select>
 
-        <Select value={filterPriority} onValueChange={(v) => v && setFilterPriority(v)}>
-          <SelectTrigger className="w-32">
-            <SelectValue placeholder="Priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Priorities</SelectItem>
-            {priorities.map(p => (
-              <SelectItem key={p} value={p}>{p}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <button className="flex items-center gap-2 px-5 py-2 h-10 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-all shadow-sm ml-auto">
+          <span className="text-lg leading-none">+</span>
+          New Task
+        </button>
       </div>
 
       {/* Kanban Board */}
@@ -182,27 +175,47 @@ function BoardColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
     id: status,
   });
 
+  const getStatusColor = (status: TaskStatus) => {
+    const COLORS: Record<TaskStatus, string> = {
+      QUEUE: 'oklch(0.68 0.02 250)',
+      WORKING: 'oklch(0.685 0.111 245)',
+      CHECKING: 'oklch(0.745 0.16 66)',
+      REVISION: 'oklch(0.635 0.21 25)',
+      READY_UPLOAD: 'oklch(0.725 0.15 152)',
+      DONE: 'oklch(0.259 0.086 257.4)',
+    };
+    return COLORS[status];
+  };
+
   return (
-    <div className="flex flex-col min-w-[320px] w-[320px] bg-slate-50 border border-slate-200 rounded-2xl p-3 h-full">
-      <div className="flex items-center justify-between mb-4 px-1">
+    <div className="flex flex-col min-w-[320px] w-[320px] h-full bg-secondary/30 border border-border rounded-[20px] p-4 gap-4">
+      {/* Column Header (inside the card list) */}
+      <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-slate-700" />
-          <h3 className="font-semibold text-slate-700">{STATUS_LABELS[status]}</h3>
+          <span className="w-2.5 h-2.5 rounded-full" style={{ background: getStatusColor(status) }} />
+          <h3 className="font-bold text-foreground uppercase tracking-tight text-sm">{STATUS_LABELS[status]}</h3>
+          <span className="ml-2 px-2 py-0.5 bg-background border border-border rounded-full text-[11px] font-bold text-muted-foreground">
+            {tasks.length}
+          </span>
         </div>
-        <span className="text-xs font-medium text-slate-500 bg-slate-200 px-2 py-0.5 rounded-full">
-          {tasks.length}
-        </span>
       </div>
 
+      {/* Cards Container */}
       <div 
         ref={setNodeRef}
-        className="flex flex-col gap-3 flex-1 overflow-y-auto min-h-[150px]"
+        className="flex flex-col gap-3 flex-1 overflow-y-auto"
       >
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map(task => (
             <TaskCard key={task.id} task={task} />
           ))}
         </SortableContext>
+        
+        {tasks.length === 0 && (
+          <div className="h-24 border-2 border-dashed border-border/60 rounded-xl flex items-center justify-center text-muted-foreground opacity-50 font-medium text-xs mt-2">
+            No tasks in {STATUS_LABELS[status]}
+          </div>
+        )}
       </div>
     </div>
   );
