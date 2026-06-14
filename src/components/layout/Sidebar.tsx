@@ -36,44 +36,48 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       </div>
 
       <nav className="sidebar__nav">
-        {MAIN_NAV.map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => 
-                `sidebar__nav-item ${isActive ? 'active' : ''}`
-              }
-              onClick={onClose}
-            >
-              <Icon size={20} className="sidebar__nav-icon" />
-              {item.name}
-            </NavLink>
-          );
-        })}
+        <ul className="sidebar__list">
+          {MAIN_NAV.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.path}>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) => 
+                    `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`
+                  }
+                  onClick={onClose}
+                >
+                  <Icon size={20} />
+                  <span>{item.name}</span>
+                </NavLink>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
-      <div className="mt-auto px-4 py-4">
-        <div className="h-px bg-white/10 mb-4" />
-        <nav className="flex flex-col gap-1">
+      <div className="mt-auto px-3 py-4">
+        <div className="sidebar__separator" />
+        <ul className="sidebar__list">
           {BOTTOM_NAV.map((item) => {
             const Icon = item.icon;
             return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) => 
-                  `sidebar__nav-item ${isActive ? 'active' : ''}`
-                }
-                onClick={onClose}
-              >
-                <Icon size={20} className="sidebar__nav-icon" />
-                {item.name}
-              </NavLink>
+              <li key={item.path}>
+                <NavLink
+                  to={item.path}
+                  className={({ isActive }) => 
+                    `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`
+                  }
+                  onClick={onClose}
+                >
+                  <Icon size={20} />
+                  <span>{item.name}</span>
+                </NavLink>
+              </li>
             );
           })}
-        </nav>
+        </ul>
       </div>
     </aside>
   );

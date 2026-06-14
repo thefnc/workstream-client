@@ -41,7 +41,7 @@ export function TaskCard({ task }: { task: Task }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.3 : 1,
+    opacity: isDragging ? 0.4 : 1,
   };
 
   const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'DONE';
@@ -51,7 +51,7 @@ export function TaskCard({ task }: { task: Task }) {
     <Card
       ref={setNodeRef}
       style={style}
-      className={`relative flex flex-col gap-3 p-3 cursor-grab active:cursor-grabbing hover:border-slate-300 hover:shadow-md transition-shadow bg-white ${isDragging ? 'z-50 shadow-xl' : ''}`}
+      className={`relative flex flex-col gap-3 p-3.5 cursor-grab active:cursor-grabbing hover:border-border hover:shadow-md transition-all bg-card ${isDragging ? 'z-50 shadow-xl ring-2 ring-primary/20' : ''}`}
       {...attributes}
       {...listeners}
     >
@@ -63,51 +63,52 @@ export function TaskCard({ task }: { task: Task }) {
             borderColor: PRIORITY_COLORS[task.priority],
             color: PRIORITY_COLORS[task.priority],
             fontSize: '10px',
-            padding: '0 4px',
+            padding: '0 6px',
+            height: '20px',
           }}
         >
           {task.priority}
         </Badge>
         {isOverdue && (
-          <Badge variant="destructive" style={{ fontSize: '10px', padding: '0 4px', background: 'oklch(0.635 0.21 25)' }}>
+          <Badge variant="destructive" className="h-5 text-[10px] px-1.5 bg-destructive text-destructive-foreground">
             OVERDUE
           </Badge>
         )}
       </div>
 
       {/* Title & Ref */}
-      <div>
-        <h4 className="font-semibold text-sm text-slate-900 leading-tight">{task.title}</h4>
-        <span className="text-xs font-mono text-slate-500">{task.referenceNumber}</span>
+      <div className="flex flex-col gap-1 mt-1">
+        <h4 className="font-semibold text-sm text-foreground leading-snug">{task.title}</h4>
+        <span className="text-[11px] font-mono text-muted-foreground">{task.referenceNumber}</span>
       </div>
 
       {/* Progress & Category */}
       <div className="flex justify-between items-center mt-1">
-        <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">
+        <span className="text-[10px] bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md font-medium uppercase tracking-wider">
           {task.category}
         </span>
         <div className="flex items-center gap-2">
-          <div className="w-16 h-1.5 rounded-full bg-slate-200 overflow-hidden">
+          <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
             <div
-              className="h-full rounded-full"
+              className="h-full rounded-full transition-all duration-300"
               style={{ width: `${task.progress}%`, background: statusColor }}
             />
           </div>
-          <span className="text-xs text-slate-500 font-medium w-6 text-right">
+          <span className="text-xs text-muted-foreground font-medium w-6 text-right">
             {task.progress}%
           </span>
         </div>
       </div>
 
       {/* Footer: User & Date */}
-      <div className="flex justify-between items-center mt-2 pt-3 border-t border-slate-100">
-        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+      <div className="flex justify-between items-center mt-2 pt-3 border-t border-border">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
           <CalendarIcon size={12} />
           {new Date(task.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
         </div>
         {task.assignedTo && (
-          <Avatar className="w-6 h-6 border border-slate-200">
-            <AvatarFallback className="text-[10px] bg-slate-100 text-slate-700">
+          <Avatar className="w-6 h-6 border border-border">
+            <AvatarFallback className="text-[10px] bg-secondary text-secondary-foreground font-semibold">
               {task.assignedTo.name.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
