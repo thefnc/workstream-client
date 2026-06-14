@@ -2,7 +2,6 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "es2023",
-    "ignoreDeprecations": "6.0",
     "lib": [
       "ES2023",
       "DOM"
@@ -25,7 +24,6 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     /* Path Aliases */
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
