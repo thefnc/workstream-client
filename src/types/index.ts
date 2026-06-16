@@ -1,22 +1,13 @@
-export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'DESIGNER' | 'VIEWER';
+export type Role = 'SUPER_ADMIN' | 'DESIGNER' | 'VIEWER';
 
 export type TaskStatus = 'QUEUE' | 'WORKING' | 'CHECKING' | 'REVISION' | 'READY_UPLOAD' | 'DONE';
-
-export const STATUS_LABELS: Record<TaskStatus, string> = {
-  QUEUE: 'Antrian',
-  WORKING: 'Dikerjakan',
-  CHECKING: 'Dicek',
-  REVISION: 'Revisi',
-  READY_UPLOAD: 'Siap Upload',
-  DONE: 'Selesai',
-};
 
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 export interface User {
   id: string;
   name: string;
-  email: string;
+  username: string;
   role: Role;
   avatarUrl?: string;
 }
@@ -62,6 +53,7 @@ export interface Task {
   dueDate: string;
   fileReference?: string;
   description?: string;
+  patternSize?: string;
   comments: Comment[];
   revisionNotes: RevisionNote[];
   progressLogs: ProgressLog[];

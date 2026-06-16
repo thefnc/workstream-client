@@ -1,23 +1,11 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useTaskStore } from '../stores/taskStore';
-import { users } from '../data/users';
-import { STATUS_LABELS } from '../types';
-import type { Task, TaskStatus } from '../types';
-
-const STATUS_COLORS: Record<TaskStatus, string> = {
-  QUEUE: 'oklch(0.68 0.02 250)',
-  WORKING: 'oklch(0.685 0.111 245)',
-  CHECKING: 'oklch(0.745 0.16 66)',
-  REVISION: 'oklch(0.635 0.21 25)',
-  READY_UPLOAD: 'oklch(0.725 0.15 152)',
-  DONE: 'oklch(0.259 0.086 257.4)',
-};
-
-function getStatusColor(status: TaskStatus) {
-  return STATUS_COLORS[status] || 'var(--muted-foreground)';
-}
+import { useTasks } from '../services/tasks';
+import { useDashboardSummary } from '../services/dashboard';
+import { useAuthStore } from '../stores/authStore';
+import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
+import type { Task } from '../types';
 
 function isOverdue(task: Task) {
   return new Date(task.dueDate) < new Date() && task.status !== 'DONE';
@@ -35,20 +23,28 @@ function isDueToday(task: Task) {
 }
 
 export default function Dashboard() {
-  const tasks = useTaskStore((state) => state.tasks);
+  const { user } = useAuthStore();
+  const { data: summary, isLoading: isLoadingSummary } = useDashboardSummary();
+  const { data: tasksData, isLoading: isLoadingTasks } = useTasks({ limit: 5 });
+  
+  const tasks = tasksData?.items || [];
 
   const metrics = useMemo(() => {
-    const total = tasks.length;
-    const working = tasks.filter((t) => t.status === 'WORKING').length;
-    const revision = tasks.filter((t) => t.status === 'REVISION').length;
-    const readyUpload = tasks.filter((t) => t.status === 'READY_UPLOAD').length;
-    const overdue = tasks.filter(isOverdue).length;
-    return { total, working, revision, readyUpload, overdue };
-  }, [tasks]);
+    if (summary) {
+      return {
+        total: summary.totalTasks,
+        working: summary.workingCount,
+        revision: summary.revisionCount,
+        readyUpload: summary.readyUploadCount,
+        overdue: summary.overdueCount,
+      };
+    }
+    return { total: 0, working: 0, revision: 0, readyUpload: 0, overdue: 0 };
+  }, [summary]);
 
   const myTasks = useMemo(
-    () => tasks.filter((t) => t.assignedTo?.id === 'u1' && t.status !== 'DONE').slice(0, 5),
-    [tasks]
+    () => tasks.filter((t: Task) => t.assignedTo?.id === user?.id && t.status !== 'DONE').slice(0, 5),
+    [tasks, user]
   );
 
   const dueTodayTasks = useMemo(
@@ -57,6 +53,8 @@ export default function Dashboard() {
   );
 
   const workloadData = useMemo(() => {
+    // TODO: Fetch users from API
+    const users: import('../types').User[] = [];
     const designers = users.filter((u) => u.role === 'DESIGNER');
     return designers.map((designer) => {
       const designerTasks = tasks.filter((t) => t.assignedTo?.id === designer.id);
@@ -83,14 +81,16 @@ export default function Dashboard() {
     { text: 'Designer 1 completed "Cleanup File Design"', time: '3 hours ago' },
   ];
 
+  if (isLoadingSummary || isLoadingTasks) return <div className="p-8 text-muted-foreground">Loading dashboard...</div>;
+
   return (
     <div className="dashboard">
       {/* Metric Cards */}
       <div className="dashboard__metrics">
         <MetricCard label="Total Tasks" value={metrics.total} color="oklch(0.685 0.111 245)" />
-        <MetricCard label="Dikerjakan" value={metrics.working} color={STATUS_COLORS.WORKING} />
-        <MetricCard label="Revisi" value={metrics.revision} color={STATUS_COLORS.REVISION} />
-        <MetricCard label="Siap Upload" value={metrics.readyUpload} color={STATUS_COLORS.READY_UPLOAD} />
+        <MetricCard label="Dikerjakan" value={metrics.working} color={getStatusColor('WORKING')} />
+        <MetricCard label="Revisi" value={metrics.revision} color={getStatusColor('REVISION')} />
+        <MetricCard label="Siap Upload" value={metrics.readyUpload} color={getStatusColor('READY_UPLOAD')} />
         <MetricCard label="Overdue" value={metrics.overdue} color="oklch(0.635 0.21 25)" />
       </div>
 

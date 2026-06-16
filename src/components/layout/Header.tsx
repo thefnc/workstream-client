@@ -1,5 +1,6 @@
-import { useLocation } from 'react-router-dom';
-import { Search, Bell, Menu } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Search, Bell, Menu, LogOut } from 'lucide-react';
+import { useAuthStore } from '../../stores/authStore';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -23,8 +24,15 @@ const PAGE_TITLES: Record<string, string> = {
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
   const basePath = '/' + location.pathname.split('/')[1];
   const title = PAGE_TITLES[basePath] || 'Workstream';
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header className="header">
@@ -63,17 +71,22 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
               aria-label="User menu"
             >
               <Avatar className="header__avatar">
-                <AvatarFallback>SA</AvatarFallback>
+                <AvatarFallback>{user?.name?.substring(0, 2).toUpperCase() || 'U'}</AvatarFallback>
               </Avatar>
-              <span className="header__user-name hidden sm:inline">Super Admin</span>
+              <span className="header__user-name hidden sm:inline">{user?.name || 'User'}</span>
             </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{user?.name}</p>
+                <p className="text-xs leading-none text-muted-foreground">{user?.role}</p>
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive cursor-pointer">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Logout</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

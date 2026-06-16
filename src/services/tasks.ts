@@ -1,0 +1,89 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { api } from './api';
+import type { Task, TaskStatus } from '../types';
+
+export const useTasks = (params?: Record<string, any>) => {
+  return useQuery({
+    queryKey: ['tasks', params],
+    queryFn: async () => {
+      const { data } = await api.get('/tasks', { params });
+      return data.data; // { items, pagination }
+    },
+  });
+};
+
+export const useBoardTasks = () => {
+  return useQuery({
+    queryKey: ['tasks', 'board'],
+    queryFn: async () => {
+      const { data } = await api.get('/tasks/board');
+      return data.data.board as Record<TaskStatus, Task[]>;
+    },
+  });
+};
+
+export const useUpdateStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ taskId, status }: { taskId: string; status: TaskStatus }) => {
+      const { data } = await api.patch(`/tasks/${taskId}/status`, { status });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
+    },
+  });
+};
+
+interface UpdateProgressPayload {
+  taskId: string;
+  progress: number;
+  note?: string;
+}
+
+export const useUpdateProgress = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: UpdateProgressPayload) => {
+      const { data } = await api.put(`/tasks/${payload.taskId}/progress`, {
+        progress: payload.progress,
+        note: payload.note,
+      });
+      return data;
+    },
+    onMutate: async (newPayload) => {
+      // Cancel any outgoing refetches so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+
+      // Snapshot the previous value
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+
+      // Optimistically update to the new value
+      if (previousTasks) {
+        queryClient.setQueryData<Task[]>(['tasks'], (old) => {
+          if (!old) return old;
+          return old.map(task =>
+            task.id === newPayload.taskId
+              ? { ...task, progress: newPayload.progress }
+              : task
+          );
+        });
+      }
+
+      // Return a context object with the snapshotted value
+      return { previousTasks };
+    },
+    // If the mutation fails, use the context returned from onMutate to roll back
+    onError: (_err, _newPayload, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
+      }
+    },
+    // Always refetch after error or success:
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+};
