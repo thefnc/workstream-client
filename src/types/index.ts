@@ -15,7 +15,7 @@ export interface User {
 export interface Comment {
   id: string;
   userId: string;
-  content: string;
+  comment: string;
   createdAt: string;
 }
 
@@ -41,6 +41,11 @@ export interface ActivityLog {
   createdAt: string;
 }
 
+export interface PatternSize {
+  id: string;
+  size: number;
+}
+
 export interface Task {
   id: string;
   referenceNumber: string;
@@ -53,7 +58,7 @@ export interface Task {
   dueDate: string;
   fileReference?: string;
   description?: string;
-  patternSize?: string;
+  patternSize?: PatternSize;
   comments: Comment[];
   revisionNotes: RevisionNote[];
   progressLogs: ProgressLog[];

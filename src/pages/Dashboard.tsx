@@ -5,12 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { useTasks } from '../services/tasks';
 import { useDashboardSummary } from '../services/dashboard';
 import { useAuthStore } from '../stores/authStore';
-import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
+import { STATUS_LABELS, getStatusColor, isDueToday } from '../lib/status-helper';
 import type { Task } from '../types';
-
-function isOverdue(task: Task) {
-  return new Date(task.dueDate) < new Date() && task.status !== 'DONE';
-}
 
 function isDueToday(task: Task) {
   const today = new Date();

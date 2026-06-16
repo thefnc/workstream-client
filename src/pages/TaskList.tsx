@@ -22,7 +22,7 @@ import { Button } from '../components/ui/button';
 import { useTasks } from '../services/tasks';
 import { useAuthStore } from '../stores/authStore';
 import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
-import type { TaskStatus, Task } from '../types';
+import type { Task } from '../types';
 
 export default function TaskList() {
   const { user } = useAuthStore();
@@ -139,11 +139,10 @@ export default function TaskList() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua Size</SelectItem>
-            <SelectItem value="S">S</SelectItem>
-            <SelectItem value="M">M</SelectItem>
-            <SelectItem value="L">L</SelectItem>
-            <SelectItem value="XL">XL</SelectItem>
-            <SelectItem value="XXL">XXL</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="12">12</SelectItem>
+            <SelectItem value="14">14</SelectItem>
+            <SelectItem value="16">16</SelectItem>
           </SelectContent>
         </Select>
 
@@ -216,7 +215,7 @@ export default function TaskList() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <span className="font-mono font-semibold text-xs">{task.patternSize || '-'}</span>
+                      <span className="font-mono font-semibold text-xs">{task.patternSize?.size || '-'}</span>
                     </TableCell>
                     <TableCell>
                       <Badge 

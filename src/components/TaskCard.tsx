@@ -29,11 +29,6 @@ export function TaskCard({ task, onEditClick }: { task: Task; onEditClick?: (tas
     },
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-  };
 
   const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'DONE';
   const statusColor = getStatusColor(task.status);
@@ -77,7 +72,7 @@ export function TaskCard({ task, onEditClick }: { task: Task; onEditClick?: (tas
           </span>
           {task.patternSize && (
             <span className="px-1.5 py-0.5 border border-border text-muted-foreground rounded text-[10px] font-mono font-bold bg-secondary/20">
-              {task.patternSize}
+              {task.patternSize.size}
             </span>
           )}
         </div>

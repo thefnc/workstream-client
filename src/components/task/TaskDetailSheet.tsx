@@ -299,10 +299,10 @@ export function TaskDetailSheet() {
                           task.comments.map(c => (
                             <div key={c.id} className="p-4 bg-secondary/20 rounded-lg border border-border space-y-2">
                               <div className="flex justify-between">
-                                <span className="font-semibold text-sm">{c.author.name}</span>
+                                <span className="font-semibold text-sm">{c.userId}</span>
                                 <span className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
                               </div>
-                              <p className="text-sm">{c.content}</p>
+                              <p className="text-sm">{c.comment}</p>
                             </div>
                           ))
                         ) : (
@@ -333,7 +333,7 @@ export function TaskDetailSheet() {
                           task.revisionNotes.map(r => (
                             <div key={r.id} className="p-4 bg-destructive/10 border-destructive/30 rounded-lg border space-y-2">
                               <div className="flex justify-between">
-                                <span className="font-semibold text-sm text-destructive">{r.createdBy.name}</span>
+                                <span className="font-semibold text-sm text-destructive">User</span>
                                 <span className="text-xs text-muted-foreground">{new Date(r.createdAt).toLocaleString()}</span>
                               </div>
                               <p className="text-sm font-medium">{r.note}</p>

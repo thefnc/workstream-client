@@ -47,7 +47,8 @@ export default function Board() {
 
   const [search, setSearch] = useState('');
   const [filterDesigner, setFilterDesigner] = useState<string>('all');
-  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterCategory] = useState<string>('all');
+  const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterPatternSize, setFilterPatternSize] = useState<string>('all');
   const [showMyTasks, setShowMyTasks] = useState(false);
 
@@ -162,11 +163,10 @@ export default function Board() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua Ukuran</SelectItem>
-            <SelectItem value="S">S</SelectItem>
-            <SelectItem value="M">M</SelectItem>
-            <SelectItem value="L">L</SelectItem>
-            <SelectItem value="XL">XL</SelectItem>
-            <SelectItem value="XXL">XXL</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="12">12</SelectItem>
+            <SelectItem value="14">14</SelectItem>
+            <SelectItem value="16">16</SelectItem>
           </SelectContent>
         </Select>
 
