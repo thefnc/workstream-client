@@ -48,7 +48,6 @@ export default function Board() {
   const [search, setSearch] = useState('');
   const [filterDesigner, setFilterDesigner] = useState<string>('all');
   const [filterCategory] = useState<string>('all');
-  const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterPatternSize, setFilterPatternSize] = useState<string>('all');
   const [showMyTasks, setShowMyTasks] = useState(false);
 
@@ -77,7 +76,7 @@ export default function Board() {
         }
 
         const matchCategory = filterCategory === 'all' || t.category === filterCategory;
-        const matchPatternSize = filterPatternSize === 'all' || t.patternSize === filterPatternSize;
+        const matchPatternSize = filterPatternSize === 'all' || t.patternSize?.size.toString() === filterPatternSize;
         return matchSearch && matchDesigner && matchCategory && matchPatternSize;
       });
     });

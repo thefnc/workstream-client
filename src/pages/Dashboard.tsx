@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTasks } from '../services/tasks';
 import { useDashboardSummary } from '../services/dashboard';
 import { useAuthStore } from '../stores/authStore';
-import { STATUS_LABELS, getStatusColor, isDueToday } from '../lib/status-helper';
+import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
 import type { Task } from '../types';
 
 function isDueToday(task: Task) {
