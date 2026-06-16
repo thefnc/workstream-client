@@ -12,12 +12,20 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Badge } from '../ui/badge';
 import { Slider } from '../ui/slider';
 import { Button } from '../ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useTaskDetail, useUpdateProgress, useUpdateStatus, useAddComment, useAddRevision, useUploadAttachment } from '../../services/tasks';
 import { useAuthStore } from '../../stores/authStore';
 import { STATUS_LABELS, getStatusColor } from '../../lib/status-helper';
 import { toast } from 'sonner';
 import type { TaskStatus } from '../../types';
+
+const PRIORITY_COLORS: Record<string, string> = {
+  LOW: 'oklch(0.725 0.15 152)',
+  MEDIUM: 'oklch(0.745 0.16 66)',
+  HIGH: 'oklch(0.635 0.21 25)',
+  URGENT: 'oklch(0.485 0.18 290)',
+};
 
 export function TaskDetailSheet() {
   const { user } = useAuthStore();
@@ -120,15 +128,15 @@ export function TaskDetailSheet() {
               <div className="flex items-center justify-center h-64 text-destructive font-medium">Gagal memuat tugas atau tidak ditemukan.</div>
             ) : (
               <div className="flex flex-col gap-6">
-                <SheetHeader className="text-left space-y-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono bg-secondary/30 text-muted-foreground px-2 py-0.5 rounded-md border border-border">
+                <SheetHeader className="text-left space-y-4">
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-mono bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md border border-border">
                         {task.referenceNumber}
                       </span>
                       {isEditable ? (
                         <Select value={task.status} onValueChange={handleStatusChange}>
-                          <SelectTrigger className="h-6 text-xs px-2" style={{ borderColor: getStatusColor(task.status), color: getStatusColor(task.status) }}>
+                          <SelectTrigger className="h-6 text-xs px-2 w-auto bg-background" style={{ borderColor: getStatusColor(task.status), color: getStatusColor(task.status) }}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -143,12 +151,29 @@ export function TaskDetailSheet() {
                         </Badge>
                       )}
                     </div>
+                    <SheetTitle className="text-2xl font-bold leading-tight">{task.title}</SheetTitle>
                   </div>
-                  <SheetTitle className="text-2xl font-bold leading-tight">{task.title}</SheetTitle>
-                  <SheetDescription className="text-sm">
-                    Kategori: <strong className="text-foreground">{task.category}</strong> • 
-                    Prioritas: <strong className="text-foreground">{task.priority}</strong>
-                  </SheetDescription>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge 
+                      variant="outline" 
+                      className="text-[10px] font-bold uppercase tracking-wider border-transparent"
+                      style={{ 
+                        backgroundColor: `${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.LOW}15`, 
+                        color: PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.LOW 
+                      }}
+                    >
+                      {task.priority}
+                    </Badge>
+                    <Badge variant="secondary" className="text-[10px] font-semibold text-secondary-foreground">
+                      {task.category}
+                    </Badge>
+                    {task.patternSize && (
+                      <Badge variant="secondary" className="text-[10px] font-mono font-bold bg-secondary/30 border-transparent">
+                        Size {task.patternSize.size}
+                      </Badge>
+                    )}
+                  </div>
                 </SheetHeader>
 
                 <Tabs defaultValue="overview" className="w-full mt-2">
@@ -168,18 +193,24 @@ export function TaskDetailSheet() {
                           <span className="text-xs text-muted-foreground font-medium">Assigned To</span>
                           <div className="flex items-center gap-2">
                             {task.assignedTo ? (
-                              <>
-                                {task.assignedTo.avatarUrl ? (
-                                  <img src={task.assignedTo.avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" />
-                                ) : (
-                                  <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">
+                              <div className="flex items-center gap-2 p-1.5 pr-3 bg-secondary/30 rounded-full border border-border/50">
+                                <Avatar className="w-6 h-6 border shadow-sm">
+                                  <AvatarImage src={task.assignedTo.avatarUrl || ''} alt={task.assignedTo.name} />
+                                  <AvatarFallback className="text-[10px] font-bold bg-primary text-primary-foreground">
                                     {task.assignedTo.name.substring(0, 2).toUpperCase()}
-                                  </div>
-                                )}
-                                <span className="text-sm font-medium">{task.assignedTo.name}</span>
-                              </>
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm font-semibold">{task.assignedTo.name}</span>
+                              </div>
                             ) : (
-                              <span className="text-sm text-muted-foreground italic">Unassigned</span>
+                              <div className="flex items-center gap-2 p-1.5 pr-3 bg-secondary/30 rounded-full border border-border/50">
+                                <Avatar className="w-6 h-6 border border-dashed shadow-sm bg-transparent">
+                                  <AvatarFallback className="text-[10px] text-muted-foreground bg-transparent">
+                                    ?
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-sm text-muted-foreground italic font-medium">Unassigned</span>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -201,9 +232,9 @@ export function TaskDetailSheet() {
                       {task.fileReference && (
                         <div className="space-y-2">
                           <span className="text-sm font-semibold">File Reference</span>
-                          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg border border-border">
+                          <div className="flex items-center gap-2 p-3 bg-card rounded-lg border border-border shadow-sm">
                             <span className="font-mono text-xs flex-1 truncate">{task.fileReference}</span>
-                            <Button variant="secondary" size="sm" onClick={() => {
+                            <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={() => {
                               navigator.clipboard.writeText(task.fileReference!);
                               toast.success('Path disalin!');
                             }}>

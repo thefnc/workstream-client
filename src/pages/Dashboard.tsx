@@ -9,6 +9,7 @@ import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
 import type { Task } from '../types';
 
 function isDueToday(task: Task) {
+  if (!task.dueDate) return false;
   const today = new Date();
   const due = new Date(task.dueDate);
   return (
