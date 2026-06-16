@@ -22,6 +22,17 @@ export const useBoardTasks = () => {
   });
 };
 
+export const useTaskDetail = (taskId?: string) => {
+  return useQuery({
+    queryKey: ['tasks', taskId],
+    queryFn: async () => {
+      const { data } = await api.get(`/tasks/${taskId}`);
+      return data.data as Task;
+    },
+    enabled: !!taskId,
+  });
+};
+
 export const useUpdateStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -29,7 +40,51 @@ export const useUpdateStatus = () => {
       const { data } = await api.patch(`/tasks/${taskId}/status`, { status });
       return data;
     },
-    onSuccess: () => {
+    onMutate: async (newPayload) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks', 'board'] });
+      
+      const previousBoard = queryClient.getQueryData<Record<TaskStatus, Task[]>>(['tasks', 'board']);
+      
+      if (previousBoard) {
+        queryClient.setQueryData<Record<TaskStatus, Task[]>>(['tasks', 'board'], (old) => {
+          if (!old) return old;
+          
+          let taskToMove: Task | null = null;
+          let oldStatus: TaskStatus | null = null;
+          
+          // Find the task and remove from old column
+          const newBoard = { ...old };
+          for (const status of Object.keys(old) as TaskStatus[]) {
+            const index = newBoard[status].findIndex(t => t.id === newPayload.taskId);
+            if (index !== -1) {
+              taskToMove = newBoard[status][index];
+              oldStatus = status;
+              newBoard[status] = [...newBoard[status]];
+              newBoard[status].splice(index, 1);
+              break;
+            }
+          }
+          
+          // Add to new column
+          if (taskToMove && oldStatus && oldStatus !== newPayload.status) {
+            newBoard[newPayload.status] = [
+              { ...taskToMove, status: newPayload.status },
+              ...newBoard[newPayload.status]
+            ];
+          }
+          
+          return newBoard;
+        });
+      }
+      
+      return { previousBoard };
+    },
+    onError: (_err, _newPayload, context) => {
+      if (context?.previousBoard) {
+        queryClient.setQueryData(['tasks', 'board'], context.previousBoard);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
     },
@@ -47,7 +102,7 @@ export const useUpdateProgress = () => {
 
   return useMutation({
     mutationFn: async (payload: UpdateProgressPayload) => {
-      const { data } = await api.put(`/tasks/${payload.taskId}/progress`, {
+      const { data } = await api.patch(`/tasks/${payload.taskId}/progress`, {
         progress: payload.progress,
         note: payload.note,
       });

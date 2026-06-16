@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import Header from './Header';
+import { TaskDetailSheet } from '../task/TaskDetailSheet';
 
 export default function AppLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,6 +23,7 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
+      <TaskDetailSheet />
     </div>
   );
 }
