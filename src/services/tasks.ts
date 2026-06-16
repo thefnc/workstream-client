@@ -142,3 +142,49 @@ export const useUpdateProgress = () => {
     },
   });
 };
+
+export const useAddComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ taskId, content }: { taskId: string; content: string }) => {
+      const { data } = await api.post(`/tasks/${taskId}/comments`, { comment: content });
+      return data;
+    },
+    onSuccess: (_, { taskId }) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', taskId] });
+    },
+  });
+};
+
+export const useAddRevision = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ taskId, note }: { taskId: string; note: string }) => {
+      const { data } = await api.post(`/tasks/${taskId}/revisions`, { note });
+      return data;
+    },
+    onSuccess: (_, { taskId }) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', taskId] });
+    },
+  });
+};
+
+export const useUploadAttachment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ taskId, file }: { taskId: string; file: File }) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const { data } = await api.post(`/tasks/${taskId}/attachments`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return data;
+    },
+    onSuccess: (_, { taskId }) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', taskId] });
+    },
+  });
+};

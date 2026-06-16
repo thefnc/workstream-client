@@ -31,12 +31,24 @@ export default function TaskList() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [designerFilter, setDesignerFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [patternSizeFilter, setPatternSizeFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('dueDate');
+  const [sortOrder, setSortOrder] = useState<string>('desc');
   
   const limit = 10;
   
   const queryParams: Record<string, any> = { page, limit };
   if (search) queryParams.search = search;
   if (statusFilter !== 'all') queryParams.status = statusFilter;
+  if (designerFilter !== 'all') queryParams.assignedToId = designerFilter;
+  if (categoryFilter !== 'all') queryParams.categoryId = categoryFilter;
+  if (priorityFilter !== 'all') queryParams.priorityId = priorityFilter;
+  if (patternSizeFilter !== 'all') queryParams.patternSize = patternSizeFilter;
+  queryParams.sortBy = sortBy;
+  queryParams.sortOrder = sortOrder;
 
   const { data, isLoading, isError } = useTasks(queryParams);
 
@@ -78,8 +90,8 @@ export default function TaskList() {
         </div>
 
         <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-          <SelectTrigger className="w-[180px] h-10">
-            <SelectValue placeholder="Semua Status" />
+          <SelectTrigger className="w-[140px] h-10">
+            <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua Status</SelectItem>
@@ -88,6 +100,70 @@ export default function TaskList() {
             ))}
           </SelectContent>
         </Select>
+
+        <Select value={designerFilter} onValueChange={(v) => { setDesignerFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-[140px] h-10">
+            <SelectValue placeholder="Designer" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Designer</SelectItem>
+            {/* Ideally fetched from backend, mocking for now as API might not exist */}
+          </SelectContent>
+        </Select>
+
+        <Select value={categoryFilter} onValueChange={(v) => { setCategoryFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-[140px] h-10">
+            <SelectValue placeholder="Kategori" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Kategori</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={priorityFilter} onValueChange={(v) => { setPriorityFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-[120px] h-10">
+            <SelectValue placeholder="Prioritas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Prioritas</SelectItem>
+            <SelectItem value="LOW">Low</SelectItem>
+            <SelectItem value="MEDIUM">Medium</SelectItem>
+            <SelectItem value="HIGH">High</SelectItem>
+            <SelectItem value="URGENT">Urgent</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={patternSizeFilter} onValueChange={(v) => { setPatternSizeFilter(v); setPage(1); }}>
+          <SelectTrigger className="w-[120px] h-10">
+            <SelectValue placeholder="Size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua Size</SelectItem>
+            <SelectItem value="S">S</SelectItem>
+            <SelectItem value="M">M</SelectItem>
+            <SelectItem value="L">L</SelectItem>
+            <SelectItem value="XL">XL</SelectItem>
+            <SelectItem value="XXL">XXL</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <Select value={`${sortBy}-${sortOrder}`} onValueChange={(v) => { 
+            const [by, order] = v.split('-');
+            setSortBy(by);
+            setSortOrder(order);
+            setPage(1);
+          }}>
+            <SelectTrigger className="w-[180px] h-10">
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="dueDate-asc">Deadline (Terdekat)</SelectItem>
+              <SelectItem value="dueDate-desc">Deadline (Terjauh)</SelectItem>
+              <SelectItem value="createdAt-desc">Dibuat (Terbaru)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Table */}

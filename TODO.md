@@ -481,11 +481,11 @@ Features:
 
 * [x] Search
 * [x] Filter by status
-* [ ] Filter by designer
-* [ ] Filter by category
-* [ ] Filter by priority
-* [ ] Filter by pattern size
-* [ ] Sort by due date
+* [x] Filter by designer
+* [x] Filter by category
+* [x] Filter by priority
+* [x] Filter by pattern size
+* [x] Sort by due date
 * [x] Click row opens detail
 
 Backend integration:
@@ -526,10 +526,10 @@ Backend integration:
 * [x] Add Revision Notes / Comments section
 * [x] Fetch `/tasks/:id`
 * [x] Update progress through backend
-* [ ] Update status through backend
-* [ ] Add comment through backend
-* [ ] Add revision note through backend
-* [ ] Upload preview attachment through backend
+* [x] Update status through backend
+* [x] Add comment through backend
+* [x] Add revision note through backend
+* [x] Upload preview attachment through backend
 * [x] Disable mutations for Viewer
 * [x] Disable mutations for Designer if task is not assigned to them
 * [x] Show task not found state
