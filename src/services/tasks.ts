@@ -1,6 +1,40 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './api';
-import type { Task } from '../types';
+import type { Task, TaskStatus } from '../types';
+
+export const useTasks = (params?: Record<string, any>) => {
+  return useQuery({
+    queryKey: ['tasks', params],
+    queryFn: async () => {
+      const { data } = await api.get('/tasks', { params });
+      return data.data; // { items, pagination }
+    },
+  });
+};
+
+export const useBoardTasks = () => {
+  return useQuery({
+    queryKey: ['tasks', 'board'],
+    queryFn: async () => {
+      const { data } = await api.get('/tasks/board');
+      return data.data.board as Record<TaskStatus, Task[]>;
+    },
+  });
+};
+
+export const useUpdateStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ taskId, status }: { taskId: string; status: TaskStatus }) => {
+      const { data } = await api.patch(`/tasks/${taskId}/status`, { status });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
+    },
+  });
+};
 
 interface UpdateProgressPayload {
   taskId: string;

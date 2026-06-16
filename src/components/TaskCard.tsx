@@ -1,8 +1,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Edit } from 'lucide-react';
 import { getStatusColor } from '../lib/status-helper';
-import type { Task, TaskStatus } from '../types';
+import type { Task } from '../types';
 
 const PRIORITY_COLORS = {
   LOW: 'oklch(0.725 0.15 152)',
@@ -11,7 +11,7 @@ const PRIORITY_COLORS = {
   URGENT: 'oklch(0.485 0.18 290)',
 };
 
-export function TaskCard({ task }: { task: Task }) {
+export function TaskCard({ task, onEditClick }: { task: Task; onEditClick?: (task: Task) => void }) {
   const {
     attributes,
     listeners,
@@ -60,7 +60,14 @@ export function TaskCard({ task }: { task: Task }) {
             Overdue
           </span>
         ) : (
-          <button className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+          <button 
+            type="button"
+            className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity z-10 relative hover:text-foreground"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditClick?.(task);
+            }}
+          >
             <Edit size={16} />
           </button>
         )}

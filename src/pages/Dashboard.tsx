@@ -1,7 +1,9 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useTaskStore } from '../stores/taskStore';
+import { useTasks } from '../services/tasks';
+import { useDashboardSummary } from '../services/dashboard';
+import { useAuthStore } from '../stores/authStore';
 import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
 import type { Task } from '../types';
 
@@ -21,20 +23,28 @@ function isDueToday(task: Task) {
 }
 
 export default function Dashboard() {
-  const tasks = useTaskStore((state) => state.tasks);
+  const { user } = useAuthStore();
+  const { data: summary, isLoading: isLoadingSummary } = useDashboardSummary();
+  const { data: tasksData, isLoading: isLoadingTasks } = useTasks({ limit: 5 });
+  
+  const tasks = tasksData?.items || [];
 
   const metrics = useMemo(() => {
-    const total = tasks.length;
-    const working = tasks.filter((t) => t.status === 'WORKING').length;
-    const revision = tasks.filter((t) => t.status === 'REVISION').length;
-    const readyUpload = tasks.filter((t) => t.status === 'READY_UPLOAD').length;
-    const overdue = tasks.filter(isOverdue).length;
-    return { total, working, revision, readyUpload, overdue };
-  }, [tasks]);
+    if (summary) {
+      return {
+        total: summary.totalTasks,
+        working: summary.workingCount,
+        revision: summary.revisionCount,
+        readyUpload: summary.readyUploadCount,
+        overdue: summary.overdueCount,
+      };
+    }
+    return { total: 0, working: 0, revision: 0, readyUpload: 0, overdue: 0 };
+  }, [summary]);
 
   const myTasks = useMemo(
-    () => tasks.filter((t) => t.assignedTo?.id === 'u1' && t.status !== 'DONE').slice(0, 5),
-    [tasks]
+    () => tasks.filter((t: Task) => t.assignedTo?.id === user?.id && t.status !== 'DONE').slice(0, 5),
+    [tasks, user]
   );
 
   const dueTodayTasks = useMemo(
@@ -70,6 +80,8 @@ export default function Dashboard() {
     { text: 'Designer 2 added a comment on "Layout Motif Rotary"', time: '2 hours ago' },
     { text: 'Designer 1 completed "Cleanup File Design"', time: '3 hours ago' },
   ];
+
+  if (isLoadingSummary || isLoadingTasks) return <div className="p-8 text-muted-foreground">Loading dashboard...</div>;
 
   return (
     <div className="dashboard">

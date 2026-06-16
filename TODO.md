@@ -166,7 +166,7 @@ Each task should have:
 Integration direction:
 
 * [x] Add pattern size field to `Task` interface
-* [ ] Fetch realistic tasks and assigned tasks directly from the backend API
+* [x] Fetch realistic tasks and assigned tasks directly from the backend API
 
 ---
 
@@ -228,12 +228,12 @@ For demo:
 
 Trial direction:
 
-* [ ] Connect progress update to backend endpoint
-* [ ] Keep local optimistic update
-* [ ] Rollback if backend rejects progress range
-* [ ] Show backend validation message
-* [ ] Disable progress update for non-assigned designer
-* [ ] Disable progress update for Viewer
+* [x] Connect progress update to backend endpoint
+* [x] Keep local optimistic update
+* [x] Rollback if backend rejects progress range
+* [x] Show backend validation message
+* [x] Disable progress update for non-assigned designer
+* [x] Disable progress update for Viewer
 
 ---
 
@@ -299,8 +299,8 @@ Trial revision:
 * [x] Redirect authenticated user to `/dashboard`
 * [x] Restrict `/users` to SUPER_ADMIN
 * [x] Restrict `/settings` to SUPER_ADMIN or hide for trial
-* [ ] Allow DESIGNER to access own workload only
-* [ ] Keep VIEWER read-only
+* [x] Allow DESIGNER to access own workload only
+* [x] Keep VIEWER read-only
 
 ---
 

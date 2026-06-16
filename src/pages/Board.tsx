@@ -29,15 +29,17 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 
-import { useTaskStore } from '../stores/taskStore';
+import { useBoardTasks, useUpdateStatus } from '../services/tasks';
 import { TaskCard } from '../components/TaskCard';
+import { ProgressModal } from '../components/task/ProgressModal';
 import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
-import type { TaskStatus, Task } from '../types';
+import type { TaskStatus, Task, User } from '../types';
 
 const COLUMNS: TaskStatus[] = ['QUEUE', 'WORKING', 'CHECKING', 'REVISION', 'READY_UPLOAD', 'DONE'];
 
 export default function Board() {
-  const { tasks, moveTaskStatus } = useTaskStore();
+  const { data: board, isLoading } = useBoardTasks();
+  const { mutate: updateStatus } = useUpdateStatus();
 
   const [search, setSearch] = useState('');
   const [filterDesigner, setFilterDesigner] = useState<string>('all');
@@ -45,34 +47,37 @@ export default function Board() {
   const [filterPriority] = useState<string>('all');
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [progressTask, setProgressTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const filteredTasks = useMemo(() => {
-    return tasks.filter((t) => {
-      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) ||
-        t.referenceNumber.toLowerCase().includes(search.toLowerCase());
-      const matchDesigner = filterDesigner === 'all' || t.assignedTo?.id === filterDesigner;
-      const matchCategory = filterCategory === 'all' || t.category === filterCategory;
-      const matchPriority = filterPriority === 'all' || t.priority === filterPriority;
-      return matchSearch && matchDesigner && matchCategory && matchPriority;
-    });
-  }, [tasks, search, filterDesigner, filterCategory, filterPriority]);
-
-  const tasksByStatus = useMemo(() => {
-    const grouped: Record<TaskStatus, Task[]> = {
+  const filteredBoard = useMemo(() => {
+    if (!board) return null;
+    const result: Record<TaskStatus, Task[]> = {
       QUEUE: [], WORKING: [], CHECKING: [], REVISION: [], READY_UPLOAD: [], DONE: []
     };
-    filteredTasks.forEach(t => grouped[t.status].push(t));
-    return grouped;
-  }, [filteredTasks]);
+    
+    (Object.keys(board) as TaskStatus[]).forEach((status) => {
+      result[status] = board[status].filter((t) => {
+        const matchSearch = search ? (t.title.toLowerCase().includes(search.toLowerCase()) ||
+          t.referenceNumber?.toLowerCase().includes(search.toLowerCase())) : true;
+        const matchDesigner = filterDesigner === 'all' || t.assignedTo?.id === filterDesigner;
+        const matchCategory = filterCategory === 'all' || t.category === filterCategory;
+        const matchPriority = filterPriority === 'all' || t.priority === filterPriority;
+        return matchSearch && matchDesigner && matchCategory && matchPriority;
+      });
+    });
+    return result;
+  }, [board, search, filterDesigner, filterCategory, filterPriority]);
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
-    const task = tasks.find(t => t.id === active.id);
+    // Flatten board to find the task
+    const allTasks = Object.values(board || {}).flat();
+    const task = allTasks.find(t => t.id === active.id);
     if (task) setActiveTask(task);
   }
 
@@ -85,22 +90,24 @@ export default function Board() {
     const activeId = active.id;
     const overId = over.id;
 
-    // over.id can be a status (the column) or a task id
+    const allTasks = Object.values(board || {}).flat();
     let newStatus = overId as TaskStatus;
     if (!COLUMNS.includes(newStatus)) {
-      // dropped on another task
-      const overTask = tasks.find(t => t.id === overId);
+      const overTask = allTasks.find(t => t.id === overId);
       if (overTask) newStatus = overTask.status;
     }
 
     if (!COLUMNS.includes(newStatus)) return;
 
-    const taskToMove = tasks.find(t => t.id === activeId);
+    const taskToMove = allTasks.find(t => t.id === activeId);
     if (taskToMove && taskToMove.status !== newStatus) {
-      moveTaskStatus(taskToMove.id, newStatus);
-      toast.success(`Task moved to ${STATUS_LABELS[newStatus]}`);
+      updateStatus({ taskId: taskToMove.id, status: newStatus });
+      toast.success(`Task status updating to ${STATUS_LABELS[newStatus]}`);
     }
   }
+
+  if (isLoading) return <div className="p-8 text-muted-foreground">Loading board...</div>;
+  if (!board) return null;
 
   return (
     <div className="flex flex-col h-full gap-6">
@@ -157,7 +164,12 @@ export default function Board() {
       >
         <div className="flex gap-4 overflow-x-auto pb-4 h-[calc(100vh-200px)] items-start">
           {COLUMNS.map(status => (
-            <BoardColumn key={status} status={status} tasks={tasksByStatus[status]} />
+            <BoardColumn 
+              key={status} 
+              status={status} 
+              tasks={filteredBoard?.[status] || []} 
+              onEditClick={setProgressTask}
+            />
           ))}
         </div>
 
@@ -165,11 +177,17 @@ export default function Board() {
           {activeTask ? <TaskCard task={activeTask} /> : null}
         </DragOverlay>
       </DndContext>
+
+      <ProgressModal
+        task={progressTask}
+        isOpen={!!progressTask}
+        onClose={() => setProgressTask(null)}
+      />
     </div>
   );
 }
 
-function BoardColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
+function BoardColumn({ status, tasks, onEditClick }: { status: TaskStatus; tasks: Task[]; onEditClick: (task: Task) => void }) {
   const { setNodeRef } = useDroppable({
     id: status,
   });
@@ -194,7 +212,7 @@ function BoardColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
       >
         <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map(task => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={task.id} task={task} onEditClick={onEditClick} />
           ))}
         </SortableContext>
 

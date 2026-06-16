@@ -12,6 +12,7 @@ import Settings from '../pages/Settings';
 
 import Login from '../pages/Login';
 import { ProtectedRoute } from '../components/layout/ProtectedRoute';
+import { RoleGuard } from '../components/layout/RoleGuard';
 
 export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -29,8 +30,13 @@ export const router = createBrowserRouter([
           { path: '/workload', element: <Workload /> },
           { path: '/workload/:designerId', element: <WorkloadDetail /> },
           { path: '/activity', element: <Activity /> },
-          { path: '/users', element: <Users /> },
-          { path: '/settings', element: <Settings /> },
+          {
+            element: <RoleGuard allowedRoles={['SUPER_ADMIN']} />,
+            children: [
+              { path: '/users', element: <Users /> },
+              { path: '/settings', element: <Settings /> },
+            ]
+          },
         ],
       },
     ],
