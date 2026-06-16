@@ -5,25 +5,34 @@ import {
   ListTodo, 
   UsersRound,
   ActivitySquare,
-  Users,
-  Settings
+  Users
 } from 'lucide-react';
+
+import { useAuthStore } from '../../stores/authStore';
 
 const MAIN_NAV = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { name: 'Board', icon: KanbanSquare, path: '/board' },
   { name: 'Tasks', icon: ListTodo, path: '/tasks' },
-  { name: 'Workload', icon: UsersRound, path: '/workload' },
-  { name: 'Activity', icon: ActivitySquare, path: '/activity' },
+  { name: 'Tim', icon: UsersRound, path: '/workload' },
+  { name: 'Riwayat', icon: ActivitySquare, path: '/activity' },
 ];
 
 const BOTTOM_NAV = [
-  { name: 'Users', icon: Users, path: '/users' },
-  { name: 'Settings', icon: Settings, path: '/settings' },
+  { name: 'Users', icon: Users, path: '/users', requireAdmin: true },
+  // Settings is hidden for this trial
 ];
 
 export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const sidebarClass = `sidebar ${isOpen ? 'is-open' : ''}`;
+  const user = useAuthStore((state) => state.user);
+  
+  const bottomNavFiltered = BOTTOM_NAV.filter(item => {
+    if (item.requireAdmin && user?.role !== 'SUPER_ADMIN') {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <aside className={sidebarClass}>
@@ -60,7 +69,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       <div className="mt-auto px-3 py-4">
         <div className="sidebar__separator" />
         <ul className="sidebar__list">
-          {BOTTOM_NAV.map((item) => {
+          {bottomNavFiltered.map((item) => {
             const Icon = item.icon;
             return (
               <li key={item.path}>

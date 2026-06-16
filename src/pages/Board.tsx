@@ -31,21 +31,18 @@ import { toast } from 'sonner';
 
 import { useTaskStore } from '../stores/taskStore';
 import { TaskCard } from '../components/TaskCard';
-import { users } from '../data/users';
-import { categories } from '../data/categories';
-import { priorities } from '../data/priorities';
-import { STATUS_LABELS } from '../types';
+import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
 import type { TaskStatus, Task } from '../types';
 
 const COLUMNS: TaskStatus[] = ['QUEUE', 'WORKING', 'CHECKING', 'REVISION', 'READY_UPLOAD', 'DONE'];
 
 export default function Board() {
   const { tasks, moveTaskStatus } = useTaskStore();
-  
+
   const [search, setSearch] = useState('');
-  const [filterDesigner, setFilterDesigner] = useState('all');
-  const [filterCategory, setFilterCategory] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
+  const [filterDesigner, setFilterDesigner] = useState<string>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterPriority] = useState<string>('all');
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
@@ -56,8 +53,8 @@ export default function Board() {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
-      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) || 
-                          t.referenceNumber.toLowerCase().includes(search.toLowerCase());
+      const matchSearch = t.title.toLowerCase().includes(search.toLowerCase()) ||
+        t.referenceNumber.toLowerCase().includes(search.toLowerCase());
       const matchDesigner = filterDesigner === 'all' || t.assignedTo?.id === filterDesigner;
       const matchCategory = filterCategory === 'all' || t.category === filterCategory;
       const matchPriority = filterPriority === 'all' || t.priority === filterPriority;
@@ -111,34 +108,36 @@ export default function Board() {
       <div className="flex flex-wrap items-center gap-3 bg-card p-4 rounded-xl border border-border">
         <div className="relative flex-1 min-w-[200px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input 
-            placeholder="Search tasks..." 
+          <Input
+            placeholder="Search tasks..."
             className="pl-10 pr-4 py-2.5 bg-background border border-border rounded-xl w-full"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        
-        <Select value={filterDesigner} onValueChange={(v) => v && setFilterDesigner(v)}>
-          <SelectTrigger className="w-[140px] lg:w-[160px] bg-background border border-border rounded-xl h-10">
+
+        <Select value={filterDesigner} onValueChange={setFilterDesigner}>
+          <SelectTrigger className="w-[140px] h-9 text-xs">
             <SelectValue placeholder="Designer" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Designers</SelectItem>
-            {users.filter(u => u.role === 'DESIGNER').map(u => (
+            <SelectItem value="all">Semua Designer</SelectItem>
+            {/* TODO: Fetch users from API */}
+            {([] as User[]).filter(u => u.role === 'DESIGNER').map(u => (
               <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <Select value={filterCategory} onValueChange={(v) => v && setFilterCategory(v)}>
-          <SelectTrigger className="w-[140px] lg:w-[160px] bg-background border border-border rounded-xl h-10">
-            <SelectValue placeholder="Category" />
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <SelectTrigger className="w-[140px] h-9 text-xs">
+            <SelectValue placeholder="Kategori" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map(c => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
+            <SelectItem value="all">Semua Kategori</SelectItem>
+            {/* TODO: Fetch categories from API */}
+            {([] as string[]).map(cat => (
+              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -175,18 +174,6 @@ function BoardColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
     id: status,
   });
 
-  const getStatusColor = (status: TaskStatus) => {
-    const COLORS: Record<TaskStatus, string> = {
-      QUEUE: 'oklch(0.68 0.02 250)',
-      WORKING: 'oklch(0.685 0.111 245)',
-      CHECKING: 'oklch(0.745 0.16 66)',
-      REVISION: 'oklch(0.635 0.21 25)',
-      READY_UPLOAD: 'oklch(0.725 0.15 152)',
-      DONE: 'oklch(0.259 0.086 257.4)',
-    };
-    return COLORS[status];
-  };
-
   return (
     <div className="flex flex-col min-w-[320px] w-[320px] h-full bg-secondary/30 border border-border rounded-[20px] p-4 gap-4">
       {/* Column Header (inside the card list) */}
@@ -201,7 +188,7 @@ function BoardColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
       </div>
 
       {/* Cards Container */}
-      <div 
+      <div
         ref={setNodeRef}
         className="flex flex-col gap-3 flex-1 overflow-y-auto"
       >
@@ -210,7 +197,7 @@ function BoardColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
             <TaskCard key={task.id} task={task} />
           ))}
         </SortableContext>
-        
+
         {tasks.length === 0 && (
           <div className="h-24 border-2 border-dashed border-border/60 rounded-xl flex items-center justify-center text-muted-foreground opacity-50 font-medium text-xs mt-2">
             No tasks in {STATUS_LABELS[status]}

@@ -1,16 +1,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Edit } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { getStatusColor } from '../lib/status-helper';
 import type { Task, TaskStatus } from '../types';
-
-const STATUS_COLORS: Record<TaskStatus, string> = {
-  QUEUE: 'oklch(0.68 0.02 250)',
-  WORKING: 'oklch(0.685 0.111 245)',
-  CHECKING: 'oklch(0.745 0.16 66)',
-  REVISION: 'oklch(0.635 0.21 25)',
-  READY_UPLOAD: 'oklch(0.725 0.15 152)',
-  DONE: 'oklch(0.259 0.086 257.4)',
-};
 
 const PRIORITY_COLORS = {
   LOW: 'oklch(0.725 0.15 152)',
@@ -42,7 +34,7 @@ export function TaskCard({ task }: { task: Task }) {
   };
 
   const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'DONE';
-  const statusColor = STATUS_COLORS[task.status];
+  const statusColor = getStatusColor(task.status);
 
   return (
     <div

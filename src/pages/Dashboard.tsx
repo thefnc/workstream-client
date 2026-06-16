@@ -2,22 +2,8 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTaskStore } from '../stores/taskStore';
-import { users } from '../data/users';
-import { STATUS_LABELS } from '../types';
-import type { Task, TaskStatus } from '../types';
-
-const STATUS_COLORS: Record<TaskStatus, string> = {
-  QUEUE: 'oklch(0.68 0.02 250)',
-  WORKING: 'oklch(0.685 0.111 245)',
-  CHECKING: 'oklch(0.745 0.16 66)',
-  REVISION: 'oklch(0.635 0.21 25)',
-  READY_UPLOAD: 'oklch(0.725 0.15 152)',
-  DONE: 'oklch(0.259 0.086 257.4)',
-};
-
-function getStatusColor(status: TaskStatus) {
-  return STATUS_COLORS[status] || 'var(--muted-foreground)';
-}
+import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
+import type { Task } from '../types';
 
 function isOverdue(task: Task) {
   return new Date(task.dueDate) < new Date() && task.status !== 'DONE';
@@ -57,6 +43,8 @@ export default function Dashboard() {
   );
 
   const workloadData = useMemo(() => {
+    // TODO: Fetch users from API
+    const users: import('../types').User[] = [];
     const designers = users.filter((u) => u.role === 'DESIGNER');
     return designers.map((designer) => {
       const designerTasks = tasks.filter((t) => t.assignedTo?.id === designer.id);
@@ -88,9 +76,9 @@ export default function Dashboard() {
       {/* Metric Cards */}
       <div className="dashboard__metrics">
         <MetricCard label="Total Tasks" value={metrics.total} color="oklch(0.685 0.111 245)" />
-        <MetricCard label="Dikerjakan" value={metrics.working} color={STATUS_COLORS.WORKING} />
-        <MetricCard label="Revisi" value={metrics.revision} color={STATUS_COLORS.REVISION} />
-        <MetricCard label="Siap Upload" value={metrics.readyUpload} color={STATUS_COLORS.READY_UPLOAD} />
+        <MetricCard label="Dikerjakan" value={metrics.working} color={getStatusColor('WORKING')} />
+        <MetricCard label="Revisi" value={metrics.revision} color={getStatusColor('REVISION')} />
+        <MetricCard label="Siap Upload" value={metrics.readyUpload} color={getStatusColor('READY_UPLOAD')} />
         <MetricCard label="Overdue" value={metrics.overdue} color="oklch(0.635 0.21 25)" />
       </div>
 

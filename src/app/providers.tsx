@@ -1,13 +1,25 @@
 import { RouterProvider } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
 import { router } from './router';
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 export function Providers() {
   return (
-    <TooltipProvider>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" />
-    </TooltipProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-center" />
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
