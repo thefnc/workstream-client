@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import {
@@ -23,10 +23,12 @@ import { useTasks } from '../services/tasks';
 import { useAuthStore } from '../stores/authStore';
 import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
 import type { Task } from '../types';
+import { CreateTaskDialog } from '../components/task/CreateTaskDialog';
 
 export default function TaskList() {
   const { user } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -56,11 +58,11 @@ export default function TaskList() {
   const meta = data?.meta || { page: 1, totalPages: 1, total: 0 };
 
   const handleRowClick = (taskId: string) => {
-    searchParams.set('taskId', taskId);
-    setSearchParams(searchParams);
+    navigate(`/tasks/${taskId}`);
   };
 
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto flex flex-col gap-6 h-full">
@@ -70,7 +72,7 @@ export default function TaskList() {
           <p className="text-muted-foreground text-sm">Kelola semua daftar pekerjaan</p>
         </div>
         {isSuperAdmin && (
-          <Button>+ New Task</Button>
+          <Button onClick={() => setIsCreateOpen(true)}>+ New Task</Button>
         )}
       </div>
 
@@ -294,6 +296,7 @@ export default function TaskList() {
           </div>
         )}
       </div>
+      <CreateTaskDialog isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
     </div>
   );
 }

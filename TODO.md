@@ -518,7 +518,7 @@ Sections:
 
 Backend integration:
 
-* [x] Create `TaskDetail.tsx` (using Sheet side-drawer as suggested)
+* [x] Create `TaskDetail.tsx` (using full page route `/tasks/:id` instead of Sheet)
 * [x] Display Overview (Ref No, Title, Priority, Description, Assignments)
 * [x] Add Progress update slider section (if role permits)
 * [x] Add History tab (fetching progress logs)

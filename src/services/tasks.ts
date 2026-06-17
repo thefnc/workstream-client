@@ -12,6 +12,32 @@ export const useTasks = (params?: Record<string, any>) => {
   });
 };
 
+export interface CreateTaskPayload {
+  title: string;
+  referenceNumber?: string;
+  description?: string;
+  fileReference?: string;
+  categoryId: string;
+  priorityId: string;
+  patternSizeId: string;
+  assignedToId?: string;
+  dueDate?: string;
+}
+
+export const useCreateTask = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateTaskPayload) => {
+      const { data } = await api.post('/tasks', payload);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
+    },
+  });
+};
+
 export const useBoardTasks = () => {
   return useQuery({
     queryKey: ['tasks', 'board'],

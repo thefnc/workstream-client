@@ -181,7 +181,7 @@ export default function Dashboard() {
                       myTasks.map((task) => (
                         <tr key={task.id} className="hover:bg-muted/30 transition-colors group">
                           <td className="py-3 px-5 font-mono text-xs text-primary font-medium">
-                            <Link to={`/task?taskId=${task.id}`} className="hover:underline">{task.referenceNumber}</Link>
+                            <Link to={`/tasks/${task.id}`} className="hover:underline">{task.referenceNumber}</Link>
                           </td>
                           <td className="py-3 px-5 text-sm font-semibold text-primary">{task.title}</td>
                           <td className="py-3 px-5">
@@ -236,7 +236,7 @@ export default function Dashboard() {
                       dueTodayTasks.map((task) => (
                         <tr key={task.id} className="hover:bg-destructive/5 transition-colors group">
                           <td className="py-3 px-5 font-mono text-xs text-primary font-medium">
-                            <Link to={`/task?taskId=${task.id}`} className="hover:underline">{task.referenceNumber}</Link>
+                            <Link to={`/tasks/${task.id}`} className="hover:underline">{task.referenceNumber}</Link>
                           </td>
                           <td className="py-3 px-5 text-sm font-semibold text-primary">{task.title}</td>
                           <td className="py-3 px-5">
@@ -348,25 +348,25 @@ function ActivityItem({ activity }: { activity: ActivityLog }) {
 function getActivityText(activity: ActivityLog, userName: string, taskRef: string) {
   switch(activity.action) {
     case 'CREATE': 
-      return <><span className="font-bold">{userName}</span> created task <Link to={`/task?taskId=${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
+      return <><span className="font-bold">{userName}</span> created task <Link to={`/tasks/${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
     case 'UPDATE_STATUS': 
-      return <><span className="font-bold">{userName}</span> moved <Link to={`/task?taskId=${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link> to <span className="font-semibold">{activity.newValue ? STATUS_LABELS[activity.newValue as TaskStatus] : 'New Status'}</span></>;
+      return <><span className="font-bold">{userName}</span> moved <Link to={`/tasks/${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link> to <span className="font-semibold">{activity.newValue ? STATUS_LABELS[activity.newValue as TaskStatus] : 'New Status'}</span></>;
     case 'UPDATE_PROGRESS': 
-      return <><span className="font-bold">{userName}</span> updated progress on <Link to={`/task?taskId=${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link> to <span className="font-semibold">{activity.newValue}%</span></>;
+      return <><span className="font-bold">{userName}</span> updated progress on <Link to={`/tasks/${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link> to <span className="font-semibold">{activity.newValue}%</span></>;
     case 'COMMENT': 
-      return <><span className="font-bold">{userName}</span> commented on <Link to={`/task?taskId=${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
+      return <><span className="font-bold">{userName}</span> commented on <Link to={`/tasks/${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
     case 'REVISION': 
       return (
         <>
-          <span className="font-bold">{userName}</span> added a revision note to <Link to={`/task?taskId=${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link>
+          <span className="font-bold">{userName}</span> added a revision note to <Link to={`/tasks/${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link>
           <p className="text-[11px] text-muted-foreground mt-2 p-2 bg-destructive/5 rounded-md border-l-2 border-destructive italic line-clamp-2">
             "{activity.newValue}"
           </p>
         </>
       );
     case 'UPLOAD_ATTACHMENT': 
-      return <><span className="font-bold">{userName}</span> uploaded an attachment to <Link to={`/task?taskId=${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
+      return <><span className="font-bold">{userName}</span> uploaded an attachment to <Link to={`/tasks/${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
     default: 
-      return <><span className="font-bold">{userName}</span> performed an action on <Link to={`/task?taskId=${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
+      return <><span className="font-bold">{userName}</span> performed an action on <Link to={`/tasks/${activity.task?.id}`} className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border border-border hover:underline">{taskRef}</Link></>;
   }
 }
