@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Menu, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { Input } from '@/components/ui/input';
@@ -12,22 +12,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const PAGE_TITLES: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/board': 'Board',
-  '/tasks': 'Tasks',
-  '/workload': 'Workload Overview',
-  '/activity': 'Activity Logs',
-  '/users': 'User Management',
-  '/settings': 'Settings',
-};
-
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
-  const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
-  const basePath = '/' + location.pathname.split('/')[1];
-  const title = PAGE_TITLES[basePath] || 'Workstream';
 
   const handleLogout = () => {
     logout();
@@ -36,7 +23,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
   return (
     <header className="header">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4 flex-1">
         <button 
           className="lg:hidden text-muted-foreground hover:text-foreground"
           onClick={onMenuClick}
@@ -44,18 +31,17 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         >
           <Menu size={20} />
         </button>
-        <h1 className="header__title truncate max-w-[150px] sm:max-w-none">{title}</h1>
+        
+        <div className="relative w-full max-w-md hidden sm:block">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search tasks, assets, or designers..."
+            className="w-full bg-muted/50 border-transparent focus-visible:ring-1 focus-visible:ring-primary/30 rounded-full pl-10 py-2 h-10 transition-all"
+          />
+        </div>
       </div>
 
       <div className="header__actions ml-auto">
-        <div className="header__search hidden sm:block">
-          <Search size={16} className="header__search-icon" />
-          <Input
-            placeholder="Search tasks..."
-            className="header__search-input"
-          />
-        </div>
-        
         <button className="sm:hidden text-muted-foreground hover:text-foreground">
           <Search size={20} />
         </button>

@@ -130,8 +130,16 @@ export default function Board() {
   if (!board) return null;
 
   return (
-    <div className="flex flex-col h-full gap-6">
-      {/* Page Header (Search & Filter) */}
+    <div className="p-6 flex flex-col h-full gap-6">
+      {/* Page Header */}
+      <section className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-primary tracking-tight">Board</h2>
+          <p className="text-muted-foreground mt-1 text-sm">Visual workflow and interactive task status management.</p>
+        </div>
+      </section>
+
+      {/* Filter Bar */}
       <div className="flex flex-wrap items-center gap-3 bg-card p-4 rounded-xl border border-border">
         <div className="relative flex-1 min-w-[200px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
