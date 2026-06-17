@@ -541,13 +541,13 @@ Backend integration:
 
 Build progress component:
 
-* [ ] Slider
-* [ ] Current percentage
-* [ ] Allowed range helper
-* [ ] Note textarea
-* [ ] Update button
-* [ ] Validation based on status
-* [ ] Error message for invalid range
+* [x] Slider
+* [x] Current percentage
+* [x] Allowed range helper
+* [x] Note textarea
+* [x] Update button
+* [x] Validation based on status
+* [x] Error message for invalid range
 
 Example helper:
 
@@ -557,14 +557,14 @@ Status Dikerjakan hanya menerima progress 15% sampai 80%.
 
 Trial behavior:
 
-* [ ] Use backend validation as source of truth
-* [ ] Show allowed range from frontend helper
-* [ ] Prevent invalid submit before API call
-* [ ] Show backend error if rejected
-* [ ] Add optimistic UI update
-* [ ] Add progress log item after success
-* [ ] Disable form for Viewer
-* [ ] Disable form for non-assigned Designer
+* [x] Use backend validation as source of truth
+* [x] Show allowed range from frontend helper
+* [x] Prevent invalid submit before API call
+* [x] Show backend error if rejected
+* [x] Add optimistic UI update
+* [x] Add progress log item after success
+* [x] Disable form for Viewer
+* [x] Disable form for non-assigned Designer
 
 ---
 
@@ -574,24 +574,24 @@ Build workload overview grouped by designer.
 
 Show each designer:
 
-* [ ] Active task count
-* [ ] Average progress
-* [ ] Dikerjakan task count
-* [ ] Revisi task count
-* [ ] Overdue task count
-* [ ] Small progress bar
-* [ ] Link to designer detail
+* [x] Active task count
+* [x] Average progress
+* [x] Dikerjakan task count
+* [x] Revisi task count
+* [x] Overdue task count
+* [x] Small progress bar
+* [x] Link to designer detail
 
 Trial direction:
 
-* [ ] Rename page title to Tim
-* [ ] Fetch `/workload`
-* [ ] SUPER_ADMIN sees all designers
-* [ ] DESIGNER sees only own card or redirects to own detail
-* [ ] VIEWER sees read-only workload
-* [ ] Add loading state
-* [ ] Add empty state
-* [ ] Add error state
+* [x] Rename page title to Tim
+* [x] Fetch `/workload`
+* [x] SUPER_ADMIN sees all designers
+* [x] DESIGNER sees only own card or redirects to own detail
+* [x] VIEWER sees read-only workload
+* [x] Add loading state
+* [x] Add empty state
+* [x] Add error state
 
 ---
 
