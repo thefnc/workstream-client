@@ -372,21 +372,21 @@ Data source:
 
 Trial direction:
 
-* [ ] Connect dashboard to backend `/dashboard/summary`
-* [ ] Show different dashboard for SUPER_ADMIN
-* [ ] Show different dashboard for DESIGNER
-* [ ] SUPER_ADMIN sees all task summary
-* [ ] DESIGNER sees own task summary
-* [ ] VIEWER sees read-only summary
-* [ ] Add loading state
-* [ ] Add error state
+* [x] Connect dashboard to backend `/dashboard/summary`
+* [x] Show different dashboard for SUPER_ADMIN
+* [x] Show different dashboard for DESIGNER
+* [x] SUPER_ADMIN sees all task summary
+* [x] DESIGNER sees own task summary
+* [x] VIEWER sees read-only summary
+* [x] Add loading state
+* [x] Add error state
 
 Designer dashboard priority:
 
-* [ ] Tugas Saya
-* [ ] Deadline Hari Ini
-* [ ] Progress Saya
-* [ ] Aktivitas Saya
+* [x] Tugas Saya
+* [x] Deadline Hari Ini
+* [x] Progress Saya
+* [x] Aktivitas Saya
 
 ---
 
@@ -418,16 +418,16 @@ Features:
 
 Trial direction:
 
-* [ ] Connect board to backend `/tasks/board`
-* [ ] Update task status through backend
-* [ ] Add optimistic update for DnD
-* [ ] Rollback DnD if request fails
-* [ ] Disable DnD for Viewer
-* [ ] Disable DnD for Designer on other people's tasks
-* [ ] Add toggle "Tugas Saya"
-* [ ] Add filter by pattern size
-* [ ] Invalidate dashboard after status update
-* [ ] Invalidate workload after status update
+* [x] Connect board to backend `/tasks/board`
+* [x] Update task status through backend
+* [x] Add optimistic update for DnD
+* [x] Rollback DnD if request fails
+* [x] Disable DnD for Viewer
+* [x] Disable DnD for Designer on other people's tasks
+* [x] Add toggle "Tugas Saya"
+* [x] Add filter by pattern size
+* [x] Invalidate dashboard after status update
+* [x] Invalidate workload after status update
 
 ---
 
@@ -453,11 +453,11 @@ Interactions:
 
 Trial improvement:
 
-* [ ] Show pattern size
-* [ ] Show ownership state
-* [ ] Show disabled state if user cannot update task
-* [ ] Make overdue badge more obvious
-* [ ] Make assigned designer clearer
+* [x] Show pattern size
+* [x] Show ownership state
+* [x] Show disabled state if user cannot update task
+* [x] Make overdue badge more obvious
+* [x] Make assigned designer clearer
 
 ---
 
@@ -467,36 +467,36 @@ Build table view.
 
 Columns:
 
-* [ ] Reference Number
-* [ ] Task
-* [ ] Category
-* [ ] Status
-* [ ] Progress
-* [ ] Designer
-* [ ] Priority
-* [ ] Due Date
-* [ ] Pattern Size
+* [x] Reference Number
+* [x] Task
+* [x] Category
+* [x] Status
+* [x] Progress
+* [x] Designer
+* [x] Priority
+* [x] Due Date
+* [x] Pattern Size
 
 Features:
 
-* [ ] Search
-* [ ] Filter by status
-* [ ] Filter by designer
-* [ ] Filter by category
-* [ ] Filter by priority
-* [ ] Filter by pattern size
-* [ ] Sort by due date
-* [ ] Click row opens detail
+* [x] Search
+* [x] Filter by status
+* [x] Filter by designer
+* [x] Filter by category
+* [x] Filter by priority
+* [x] Filter by pattern size
+* [x] Sort by due date
+* [x] Click row opens detail
 
 Backend integration:
 
-* [ ] Fetch `/tasks`
-* [ ] Support pagination
-* [ ] Support backend query params
-* [ ] Show loading state
-* [ ] Show error state
-* [ ] Hide create/edit/delete from non SUPER_ADMIN
-* [ ] Designers only see assigned tasks from backend
+* [x] Fetch `/tasks`
+* [x] Support pagination
+* [x] Support backend query params
+* [x] Show loading state
+* [x] Show error state
+* [x] Hide create/edit/delete from non SUPER_ADMIN
+* [x] Designers only see assigned tasks from backend
 
 ---
 
@@ -506,37 +506,34 @@ Build document-style detail page.
 
 Sections:
 
-* [ ] Overview
-* [ ] Instructions
-* [ ] Progress Update
-* [ ] Progress History
-* [ ] File Reference
-* [ ] Attachments Preview
-* [ ] Revision Notes
-* [ ] Comments
-* [ ] Activity Timeline
-
-Demo interactions:
-
-* [ ] Update progress locally
-* [ ] Add progress note locally
-* [ ] Add comment locally
-* [ ] Add revision note locally
-* [ ] Copy file reference
-* [ ] Show toast feedback
+* [x] Overview
+* [x] Instructions
+* [x] Progress Update
+* [x] Progress History
+* [x] File Reference
+* [x] Attachments Preview
+* [x] Revision Notes
+* [x] Comments
+* [x] Activity Timeline
 
 Backend integration:
 
-* [ ] Fetch `/tasks/:id`
-* [ ] Update progress through backend
-* [ ] Update status through backend
-* [ ] Add comment through backend
-* [ ] Add revision note through backend
-* [ ] Upload preview attachment through backend
-* [ ] Disable mutations for Viewer
-* [ ] Disable mutations for Designer if task is not assigned to them
-* [ ] Show task not found state
-* [ ] Show forbidden state
+* [x] Create `TaskDetail.tsx` (using Sheet side-drawer as suggested)
+* [x] Display Overview (Ref No, Title, Priority, Description, Assignments)
+* [x] Add Progress update slider section (if role permits)
+* [x] Add History tab (fetching progress logs)
+* [x] Add File Reference / Link attachments section
+* [x] Add Revision Notes / Comments section
+* [x] Fetch `/tasks/:id`
+* [x] Update progress through backend
+* [x] Update status through backend
+* [x] Add comment through backend
+* [x] Add revision note through backend
+* [x] Upload preview attachment through backend
+* [x] Disable mutations for Viewer
+* [x] Disable mutations for Designer if task is not assigned to them
+* [x] Show task not found state
+* [x] Show forbidden state
 
 ---
 

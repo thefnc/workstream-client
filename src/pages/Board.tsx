@@ -26,8 +26,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '../components/ui/select';
+import { Switch } from '../components/ui/switch';
+import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
+import { useAuthStore } from '../stores/authStore';
 
 import { useBoardTasks, useUpdateStatus } from '../services/tasks';
 import { TaskCard } from '../components/TaskCard';
@@ -38,13 +41,15 @@ import type { TaskStatus, Task, User } from '../types';
 const COLUMNS: TaskStatus[] = ['QUEUE', 'WORKING', 'CHECKING', 'REVISION', 'READY_UPLOAD', 'DONE'];
 
 export default function Board() {
+  const { user } = useAuthStore();
   const { data: board, isLoading } = useBoardTasks();
   const { mutate: updateStatus } = useUpdateStatus();
 
   const [search, setSearch] = useState('');
   const [filterDesigner, setFilterDesigner] = useState<string>('all');
-  const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [filterPriority] = useState<string>('all');
+  const [filterCategory] = useState<string>('all');
+  const [filterPatternSize, setFilterPatternSize] = useState<string>('all');
+  const [showMyTasks, setShowMyTasks] = useState(false);
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [progressTask, setProgressTask] = useState<Task | null>(null);
@@ -59,26 +64,41 @@ export default function Board() {
     const result: Record<TaskStatus, Task[]> = {
       QUEUE: [], WORKING: [], CHECKING: [], REVISION: [], READY_UPLOAD: [], DONE: []
     };
-    
+
     (Object.keys(board) as TaskStatus[]).forEach((status) => {
       result[status] = board[status].filter((t) => {
         const matchSearch = search ? (t.title.toLowerCase().includes(search.toLowerCase()) ||
           t.referenceNumber?.toLowerCase().includes(search.toLowerCase())) : true;
-        const matchDesigner = filterDesigner === 'all' || t.assignedTo?.id === filterDesigner;
+
+        let matchDesigner = filterDesigner === 'all' || t.assignedTo?.id === filterDesigner;
+        if (showMyTasks && user) {
+          matchDesigner = t.assignedTo?.id === user.id;
+        }
+
         const matchCategory = filterCategory === 'all' || t.category === filterCategory;
-        const matchPriority = filterPriority === 'all' || t.priority === filterPriority;
-        return matchSearch && matchDesigner && matchCategory && matchPriority;
+        const matchPatternSize = filterPatternSize === 'all' || t.patternSize?.size.toString() === filterPatternSize;
+        return matchSearch && matchDesigner && matchCategory && matchPatternSize;
       });
     });
     return result;
-  }, [board, search, filterDesigner, filterCategory, filterPriority]);
+  }, [board, search, filterDesigner, filterCategory, filterPatternSize, showMyTasks, user]);
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
     // Flatten board to find the task
     const allTasks = Object.values(board || {}).flat();
     const task = allTasks.find(t => t.id === active.id);
-    if (task) setActiveTask(task);
+    if (task) {
+      const isViewer = user?.role === 'VIEWER';
+      const isDesigner = user?.role === 'DESIGNER';
+      const isMyTask = task.assignedTo?.id === user?.id;
+
+      if (isViewer || (isDesigner && !isMyTask)) {
+        toast.error("Anda tidak memiliki izin untuk memindahkan tugas ini.");
+        return; // Prevent drag interaction by not setting active task (or cancelling)
+      }
+      setActiveTask(task);
+    }
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -136,18 +156,23 @@ export default function Board() {
           </SelectContent>
         </Select>
 
-        <Select value={filterCategory} onValueChange={setFilterCategory}>
+        <Select value={filterPatternSize} onValueChange={setFilterPatternSize}>
           <SelectTrigger className="w-[140px] h-9 text-xs">
-            <SelectValue placeholder="Kategori" />
+            <SelectValue placeholder="Ukuran Pola" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Semua Kategori</SelectItem>
-            {/* TODO: Fetch categories from API */}
-            {([] as string[]).map(cat => (
-              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-            ))}
+            <SelectItem value="all">Semua Ukuran</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="12">12</SelectItem>
+            <SelectItem value="14">14</SelectItem>
+            <SelectItem value="16">16</SelectItem>
           </SelectContent>
         </Select>
+
+        <div className="flex items-center space-x-2 ml-2 bg-secondary/20 px-3 py-1.5 rounded-lg border border-border">
+          <Switch id="my-tasks" checked={showMyTasks} onCheckedChange={setShowMyTasks} />
+          <Label htmlFor="my-tasks" className="text-xs font-semibold cursor-pointer">Tugas Saya</Label>
+        </div>
 
         <button className="flex items-center gap-2 px-5 py-2 h-10 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-all shadow-sm ml-auto">
           <span className="text-lg leading-none">+</span>
@@ -164,10 +189,10 @@ export default function Board() {
       >
         <div className="flex gap-4 overflow-x-auto pb-4 h-[calc(100vh-200px)] items-start">
           {COLUMNS.map(status => (
-            <BoardColumn 
-              key={status} 
-              status={status} 
-              tasks={filteredBoard?.[status] || []} 
+            <BoardColumn
+              key={status}
+              status={status}
+              tasks={filteredBoard?.[status] || []}
               onEditClick={setProgressTask}
             />
           ))}
