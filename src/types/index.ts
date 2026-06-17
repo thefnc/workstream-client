@@ -15,6 +15,7 @@ export interface User {
 export interface Comment {
   id: string;
   userId: string;
+  user?: User;
   comment: string;
   createdAt: string;
 }
@@ -22,12 +23,14 @@ export interface Comment {
 export interface RevisionNote {
   id: string;
   note: string;
+  user?: User;
   createdAt: string;
 }
 
 export interface ProgressLog {
   id: string;
   userId: string;
+  user?: User;
   previousProgress: number;
   newProgress: number;
   note?: string;

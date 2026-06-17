@@ -27,7 +27,7 @@ export const useTaskDetail = (taskId?: string) => {
     queryKey: ['tasks', taskId],
     queryFn: async () => {
       const { data } = await api.get(`/tasks/${taskId}`);
-      return data.data as Task;
+      return data.data.task as Task;
     },
     enabled: !!taskId,
   });

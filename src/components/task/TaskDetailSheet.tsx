@@ -5,10 +5,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
 } from '../ui/sheet';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { ScrollArea } from '../ui/scroll-area';
 import { Badge } from '../ui/badge';
 import { Slider } from '../ui/slider';
 import { Button } from '../ui/button';
@@ -19,6 +16,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { STATUS_LABELS, getStatusColor } from '../../lib/status-helper';
 import { toast } from 'sonner';
 import type { TaskStatus } from '../../types';
+import { ChevronRight, Calendar, Info, FolderOpen, UploadCloud, CheckCircle, AlertCircle } from 'lucide-react';
 
 const PRIORITY_COLORS: Record<string, string> = {
   LOW: 'oklch(0.725 0.15 152)',
@@ -119,291 +117,340 @@ export function TaskDetailSheet() {
 
   return (
     <Sheet open={!!taskId} onOpenChange={(open) => !open && handleClose()}>
-      <SheetContent className="w-full sm:max-w-xl md:max-w-2xl overflow-hidden flex flex-col p-0 gap-0">
-        <ScrollArea className="flex-1 h-full">
-          <div className="p-6">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64 text-muted-foreground">Memuat detail task...</div>
-            ) : isError || !task ? (
-              <div className="flex items-center justify-center h-64 text-destructive font-medium">Gagal memuat tugas atau tidak ditemukan.</div>
-            ) : (
-              <div className="flex flex-col gap-6">
-                <SheetHeader className="text-left space-y-4">
-                  <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xs font-mono bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md border border-border">
-                        {task.referenceNumber}
-                      </span>
-                      {isEditable ? (
-                        <Select value={task.status} onValueChange={handleStatusChange}>
-                          <SelectTrigger className="h-6 text-xs px-2 w-auto bg-background" style={{ borderColor: getStatusColor(task.status), color: getStatusColor(task.status) }}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(STATUS_LABELS).map(([k, label]) => (
-                              <SelectItem key={k} value={k}>{label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Badge variant="outline" style={{ borderColor: getStatusColor(task.status), color: getStatusColor(task.status) }}>
-                          {STATUS_LABELS[task.status]}
-                        </Badge>
-                      )}
-                    </div>
-                    <SheetTitle className="text-2xl font-bold leading-tight">{task.title}</SheetTitle>
-                  </div>
+      {/* 
+        We use w-full md:w-[640px] and disable the default shadcn close button internally if needed,
+        but leaving it is fine. The internal flex layout matches the reference exactly.
+      */}
+      <SheetContent className="w-full sm:max-w-2xl md:max-w-3xl lg:max-w-[800px] overflow-hidden flex flex-col p-0 gap-0 border-l border-border bg-background shadow-2xl">
+        
+        {/* Loading / Error States */}
+        {isLoading ? (
+          <div className="flex flex-1 items-center justify-center text-muted-foreground">Memuat detail task...</div>
+        ) : isError || !task ? (
+          <div className="flex flex-1 items-center justify-center text-destructive font-medium">Gagal memuat tugas atau tidak ditemukan.</div>
+        ) : (
+          <>
+            {/* Header */}
+            <header className="h-20 px-8 flex items-center justify-between border-b border-border bg-card shrink-0">
+              <div className="flex flex-col">
+                <nav className="flex items-center gap-2 text-muted-foreground mb-1">
+                  <span className="text-xs font-medium">Workstream</span>
+                  <ChevronRight size={14} />
+                  <span className="text-xs font-medium text-foreground">{task.category}</span>
+                </nav>
+                <div className="flex items-center gap-4">
+                  <SheetTitle className="text-lg font-bold text-foreground m-0 leading-tight">
+                    {task.title}
+                  </SheetTitle>
+                  <span className="font-mono text-xs bg-secondary/50 border border-border px-2 py-0.5 rounded text-muted-foreground">
+                    {task.referenceNumber}
+                  </span>
+                </div>
+              </div>
+            </header>
 
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge 
-                      variant="outline" 
-                      className="text-[10px] font-bold uppercase tracking-wider border-transparent"
-                      style={{ 
-                        backgroundColor: `${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.LOW}15`, 
-                        color: PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.LOW 
-                      }}
-                    >
-                      {task.priority}
-                    </Badge>
-                    <Badge variant="secondary" className="text-[10px] font-semibold text-secondary-foreground">
-                      {task.category}
-                    </Badge>
-                    {task.patternSize && (
-                      <Badge variant="secondary" className="text-[10px] font-mono font-bold bg-secondary/30 border-transparent">
-                        Size {task.patternSize.size}
-                      </Badge>
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 custom-scrollbar">
+              
+              {/* Metadata Grid */}
+              <section className="grid grid-cols-2 md:grid-cols-3 gap-6 p-5 bg-secondary/20 rounded-xl border border-border">
+                {/* Status */}
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Status</p>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: getStatusColor(task.status) }} />
+                    <span className="text-sm font-semibold text-foreground">
+                      {STATUS_LABELS[task.status]}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Progress */}
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Progress</p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-2 bg-border/50 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all" 
+                        style={{ width: `${task.progress}%`, backgroundColor: getStatusColor(task.status) }} 
+                      />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground">{task.progress}%</span>
+                  </div>
+                </div>
+
+                {/* Priority */}
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Priority</p>
+                  <Badge 
+                    variant="outline" 
+                    className="text-[10px] font-bold uppercase tracking-wider border-transparent"
+                    style={{ 
+                      backgroundColor: `${PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.LOW}15`, 
+                      color: PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.LOW 
+                    }}
+                  >
+                    {task.priority}
+                  </Badge>
+                </div>
+
+                {/* Assigned Designer */}
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Assigned Designer</p>
+                  <div className="flex items-center gap-2">
+                    {task.assignedTo ? (
+                      <>
+                        <Avatar className="w-6 h-6 border border-border/50">
+                          <AvatarImage src={task.assignedTo.avatarUrl || ''} alt={task.assignedTo.name} />
+                          <AvatarFallback className="text-[10px] font-bold bg-primary text-primary-foreground">
+                            {task.assignedTo.name.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm font-medium text-foreground">{task.assignedTo.name}</span>
+                      </>
+                    ) : (
+                      <span className="text-sm italic text-muted-foreground">Unassigned</span>
                     )}
                   </div>
-                </SheetHeader>
+                </div>
 
-                <Tabs defaultValue="overview" className="w-full mt-2">
-                  <TabsList className="w-full justify-start border-b border-border rounded-none h-auto p-0 bg-transparent flex-wrap gap-4 sm:gap-6">
-                    <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2">Overview</TabsTrigger>
-                    <TabsTrigger value="progress" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2">Update Progress</TabsTrigger>
-                    <TabsTrigger value="history" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2">History</TabsTrigger>
-                    <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2">Comments</TabsTrigger>
-                    <TabsTrigger value="revisions" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2">Revisions</TabsTrigger>
-                    <TabsTrigger value="files" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2">Files</TabsTrigger>
-                  </TabsList>
+                {/* Category */}
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Category</p>
+                  <span className="text-sm font-medium text-foreground">{task.category}</span>
+                </div>
 
-                  <div className="pt-6">
-                    <TabsContent value="overview" className="m-0 space-y-6">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <span className="text-xs text-muted-foreground font-medium">Assigned To</span>
-                          <div className="flex items-center gap-2">
-                            {task.assignedTo ? (
-                              <div className="flex items-center gap-2 p-1.5 pr-3 bg-secondary/30 rounded-full border border-border/50">
-                                <Avatar className="w-6 h-6 border shadow-sm">
-                                  <AvatarImage src={task.assignedTo.avatarUrl || ''} alt={task.assignedTo.name} />
-                                  <AvatarFallback className="text-[10px] font-bold bg-primary text-primary-foreground">
-                                    {task.assignedTo.name.substring(0, 2).toUpperCase()}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-sm font-semibold">{task.assignedTo.name}</span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2 p-1.5 pr-3 bg-secondary/30 rounded-full border border-border/50">
-                                <Avatar className="w-6 h-6 border border-dashed shadow-sm bg-transparent">
-                                  <AvatarFallback className="text-[10px] text-muted-foreground bg-transparent">
-                                    ?
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-sm text-muted-foreground italic font-medium">Unassigned</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-xs text-muted-foreground font-medium">Due Date</span>
-                          <p className="text-sm font-medium">
-                            {new Date(task.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <span className="text-sm font-semibold">Deskripsi Instruksi</span>
-                        <div className="p-4 bg-secondary/30 rounded-lg text-sm border border-border min-h-[100px] whitespace-pre-wrap">
-                          {task.description || <span className="text-muted-foreground italic">Tidak ada deskripsi.</span>}
-                        </div>
-                      </div>
-
-                      {task.fileReference && (
-                        <div className="space-y-2">
-                          <span className="text-sm font-semibold">File Reference</span>
-                          <div className="flex items-center gap-2 p-3 bg-card rounded-lg border border-border shadow-sm">
-                            <span className="font-mono text-xs flex-1 truncate">{task.fileReference}</span>
-                            <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={() => {
-                              navigator.clipboard.writeText(task.fileReference!);
-                              toast.success('Path disalin!');
-                            }}>
-                              Copy
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </TabsContent>
-
-                    <TabsContent value="progress" className="m-0 space-y-6">
-                      <div className="flex flex-col gap-6 p-5 border border-border rounded-xl shadow-sm bg-card">
-                        <div className="flex justify-between items-center">
-                          <div className="space-y-0.5">
-                            <h4 className="font-semibold text-sm">Update Progress</h4>
-                            <p className="text-xs text-muted-foreground">Ubah progress tugas saat ini.</p>
-                          </div>
-                          <span className="text-2xl font-bold">{progressVal[0]}%</span>
-                        </div>
-                        
-                        <Slider
-                          value={progressVal}
-                          onValueChange={(val: number[]) => setProgressVal(val)}
-                          max={100}
-                          step={1}
-                          disabled={!isEditable || isUpdatingProgress}
-                        />
-
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Catatan Progress (Opsional)</label>
-                          <textarea 
-                            className="w-full h-24 p-3 rounded-md border border-border bg-background resize-none text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                            placeholder="Apa yang telah Anda kerjakan hari ini?"
-                            value={progressNote}
-                            onChange={(e) => setProgressNote(e.target.value)}
-                            disabled={!isEditable || isUpdatingProgress}
-                          />
-                        </div>
-
-                        {!isEditable ? (
-                          <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-md font-medium text-center">
-                            Anda tidak memiliki izin untuk mengupdate tugas ini.
-                          </div>
-                        ) : (
-                          <div className="flex justify-end">
-                            <Button onClick={handleSaveProgress} disabled={isUpdatingProgress}>
-                              {isUpdatingProgress ? 'Menyimpan...' : 'Simpan Progress'}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="history" className="m-0">
-                      {task.progressLogs && task.progressLogs.length > 0 ? (
-                        <div className="space-y-4">
-                          {task.progressLogs.map(log => (
-                            <div key={log.id} className="p-4 border border-border rounded-lg bg-card/50">
-                              <div className="flex justify-between items-start mb-2">
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(log.createdAt).toLocaleString()}
-                                </span>
-                                <span className="text-sm font-bold">{log.previousProgress}% → {log.newProgress}%</span>
-                              </div>
-                              {log.note && <p className="text-sm">{log.note}</p>}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="p-8 text-center text-muted-foreground border border-dashed rounded-lg">
-                          Belum ada history progress.
-                        </div>
-                      )}
-                    </TabsContent>
-
-                    <TabsContent value="comments" className="m-0 space-y-6">
-                      <div className="flex flex-col gap-3">
-                        <textarea 
-                          className="w-full h-24 p-3 rounded-md border border-border bg-background resize-none text-sm"
-                          placeholder="Tulis komentar..."
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                        />
-                        <div className="flex justify-end">
-                          <Button onClick={handleAddComment} disabled={isAddingComment || !commentText.trim()}>
-                            Kirim Komentar
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        {task.comments && task.comments.length > 0 ? (
-                          task.comments.map(c => (
-                            <div key={c.id} className="p-4 bg-secondary/20 rounded-lg border border-border space-y-2">
-                              <div className="flex justify-between">
-                                <span className="font-semibold text-sm">{c.userId}</span>
-                                <span className="text-xs text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
-                              </div>
-                              <p className="text-sm">{c.comment}</p>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center text-muted-foreground py-8">Belum ada komentar.</div>
-                        )}
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="revisions" className="m-0 space-y-6">
-                      {user?.role === 'SUPER_ADMIN' && (
-                        <div className="flex flex-col gap-3">
-                          <textarea 
-                            className="w-full h-24 p-3 rounded-md border border-border bg-background resize-none text-sm"
-                            placeholder="Catatan revisi (hanya untuk Admin)..."
-                            value={revisionNote}
-                            onChange={(e) => setRevisionNote(e.target.value)}
-                          />
-                          <div className="flex justify-end">
-                            <Button variant="destructive" onClick={handleAddRevision} disabled={isAddingRevision || !revisionNote.trim()}>
-                              Tambahkan Revisi
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="space-y-4">
-                        {task.revisionNotes && task.revisionNotes.length > 0 ? (
-                          task.revisionNotes.map(r => (
-                            <div key={r.id} className="p-4 bg-destructive/10 border-destructive/30 rounded-lg border space-y-2">
-                              <div className="flex justify-between">
-                                <span className="font-semibold text-sm text-destructive">User</span>
-                                <span className="text-xs text-muted-foreground">{new Date(r.createdAt).toLocaleString()}</span>
-                              </div>
-                              <p className="text-sm font-medium">{r.note}</p>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center text-muted-foreground py-8">Belum ada revisi.</div>
-                        )}
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="files" className="m-0 space-y-6">
-                      {isEditable && (
-                        <div className="flex items-center gap-4 p-4 border border-border rounded-lg bg-card">
-                          <input 
-                            type="file" 
-                            className="text-sm flex-1"
-                            onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                          />
-                          <Button onClick={handleUpload} disabled={isUploading || !selectedFile}>
-                            Upload
-                          </Button>
-                        </div>
-                      )}
-
-                      <div className="space-y-3">
-                        {/* Task.attachments array missing from type, assuming it's task.attachments if added by backend */}
-                        {/* Using a placeholder message if API doesn't return them yet */}
-                        <div className="p-8 text-center text-muted-foreground border border-dashed rounded-lg">
-                          Daftar file preview akan muncul di sini.
-                        </div>
-                      </div>
-                    </TabsContent>
+                {/* Due Date */}
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Due Date</p>
+                  <div className="flex items-center gap-1.5 text-destructive font-semibold">
+                    <Calendar size={16} />
+                    <span className="text-sm font-medium">
+                      {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'No due date'}
+                    </span>
                   </div>
-                </Tabs>
-              </div>
+                </div>
+              </section>
+
+              {/* Instructions */}
+              <section className="space-y-3">
+                <h3 className="text-base font-semibold text-foreground">Instructions</h3>
+                <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                  {task.description || <span className="italic">Tidak ada instruksi yang diberikan.</span>}
+                </div>
+              </section>
+
+              {/* File Reference */}
+              {task.fileReference && (
+                <section className="space-y-3">
+                  <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                    File Reference
+                    <Info size={16} className="text-muted-foreground" />
+                  </h3>
+                  <div className="flex items-center gap-3 bg-primary/5 text-foreground p-3 rounded-lg border border-primary/20">
+                    <FolderOpen size={18} className="text-primary" />
+                    <code className="flex-1 font-mono text-xs truncate">
+                      {task.fileReference}
+                    </code>
+                    <button 
+                      className="hover:bg-primary/10 p-1.5 rounded transition-colors group"
+                      onClick={() => {
+                        navigator.clipboard.writeText(task.fileReference!);
+                        toast.success('Path disalin!');
+                      }}
+                    >
+                      <Info size={16} className="text-muted-foreground group-active:scale-90 transition-transform" />
+                    </button>
+                  </div>
+                </section>
+              )}
+
+              {/* Attachments */}
+              <section className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-foreground">Attachments</h3>
+                  {isEditable && (
+                    <button className="text-xs font-medium text-primary hover:underline">
+                      Add Files
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  {/* For now, just a placeholder for empty state or upload button */}
+                  {isEditable && (
+                    <div className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:bg-secondary/30 transition-colors cursor-pointer relative">
+                      <input 
+                        type="file" 
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setSelectedFile(file);
+                            // Auto upload for demo
+                            uploadAttachment({ taskId: task.id, file });
+                            toast.success('Uploading file...');
+                          }
+                        }}
+                      />
+                      <UploadCloud size={24} className="mb-2" />
+                      <span className="text-[10px] font-medium">Upload</span>
+                    </div>
+                  )}
+                  {(!isEditable) && (
+                    <div className="col-span-3 text-sm text-muted-foreground p-4 bg-secondary/10 rounded-lg border border-border text-center">
+                      Belum ada lampiran.
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {/* Update Progress & Status (Only Editable) */}
+              {isEditable && (
+                <section className="space-y-4 p-5 border border-border rounded-xl bg-card shadow-sm">
+                   <div className="flex justify-between items-center mb-2">
+                     <h3 className="text-sm font-semibold text-foreground">Update Progress</h3>
+                     <span className="text-xl font-bold">{progressVal[0]}%</span>
+                   </div>
+                   
+                   <Slider
+                     value={progressVal}
+                     onValueChange={(val: any) => setProgressVal(Array.isArray(val) ? val : [val])}
+                     max={100}
+                     step={1}
+                     disabled={isUpdatingProgress}
+                   />
+
+                   <div className="pt-2">
+                     <textarea 
+                       className="w-full h-20 p-3 rounded-lg border border-border bg-background resize-none text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                       placeholder="Catatan update progress (Opsional)..."
+                       value={progressNote}
+                       onChange={(e) => setProgressNote(e.target.value)}
+                       disabled={isUpdatingProgress}
+                     />
+                   </div>
+                </section>
+              )}
+
+              {/* Revision Notes */}
+              {(task.revisionNotes?.length > 0 || user?.role === 'SUPER_ADMIN') && (
+                <section className="space-y-4">
+                  <h3 className="text-base font-semibold text-foreground">Revision Notes</h3>
+                  
+                  {user?.role === 'SUPER_ADMIN' && (
+                    <div className="flex flex-col gap-2 mb-4">
+                      <textarea 
+                        className="w-full h-20 p-3 rounded-lg border border-border bg-background resize-none text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholder="Tambahkan catatan revisi..."
+                        value={revisionNote}
+                        onChange={(e) => setRevisionNote(e.target.value)}
+                      />
+                      <div className="flex justify-end">
+                        <Button variant="destructive" size="sm" onClick={handleAddRevision} disabled={isAddingRevision || !revisionNote.trim()}>
+                          Add Revision
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {task.revisionNotes?.length > 0 ? (
+                    <div className="space-y-4 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-border/60">
+                      {task.revisionNotes.map(r => (
+                        <div key={r.id} className="relative pl-8">
+                          <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-background border-2 border-destructive flex items-center justify-center z-10">
+                            <AlertCircle size={12} className="text-destructive" />
+                          </div>
+                          <div className="bg-destructive/5 p-4 rounded-lg border border-destructive/20">
+                            <div className="flex justify-between items-center mb-1">
+                            <p className="text-xs font-bold text-foreground">{r.user?.name || 'Admin Revision'}</p>
+                              <span className="text-[10px] text-muted-foreground">{new Date(r.createdAt).toLocaleString()}</span>
+                            </div>
+                            <p className="text-sm text-foreground">{r.note}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground italic">Belum ada catatan revisi.</div>
+                  )}
+                </section>
+              )}
+
+              {/* Comments (Team Collaboration) */}
+              <section className="space-y-4 pb-8">
+                <h3 className="text-base font-semibold text-foreground">Team Collaboration</h3>
+                <div className="flex gap-3">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={user?.avatarUrl || ''} />
+                    <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                      {user?.name?.substring(0,2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <textarea 
+                      className="w-full h-20 rounded-xl border border-border bg-background focus:ring-1 focus:ring-primary focus:border-primary text-sm p-3 resize-none"
+                      placeholder="Add a comment or @tag a teammate..."
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                    />
+                    <div className="flex justify-end mt-2">
+                      <Button size="sm" onClick={handleAddComment} disabled={isAddingComment || !commentText.trim()}>
+                        Post Comment
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mt-6">
+                  {task.comments?.map(c => (
+                    <div key={c.id} className="flex gap-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={c.user?.avatarUrl || ''} />
+                        <AvatarFallback className="text-[10px] font-bold bg-secondary text-secondary-foreground">
+                          {(c.user?.name || c.userId).substring(0,2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 bg-secondary/10 p-3 rounded-lg border border-border">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-semibold text-xs text-foreground">{c.user?.name || c.userId}</span>
+                          <span className="text-[10px] text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
+                        </div>
+                        <p className="text-sm text-foreground">{c.comment}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+            </div>
+
+            {/* Sticky Footer Actions */}
+            {isEditable && (
+              <footer className="h-20 px-8 flex items-center justify-end gap-4 border-t border-border bg-card shrink-0">
+                <div className="flex items-center gap-3 mr-auto">
+                  <span className="text-sm font-medium text-muted-foreground">Change Status:</span>
+                  <Select value={task.status} onValueChange={handleStatusChange}>
+                    <SelectTrigger className="h-9 text-sm px-3 w-40 bg-background" style={{ borderColor: getStatusColor(task.status), color: getStatusColor(task.status) }}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(STATUS_LABELS).map(([k, label]) => (
+                        <SelectItem key={k} value={k}>{label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button variant="outline" className="px-6 rounded-xl" onClick={handleClose}>
+                  Discard Changes
+                </Button>
+                <Button className="px-8 rounded-xl shadow-lg" onClick={handleSaveProgress} disabled={isUpdatingProgress}>
+                  Save & Update
+                </Button>
+              </footer>
             )}
-          </div>
-        </ScrollArea>
+          </>
+        )}
       </SheetContent>
     </Sheet>
   );
