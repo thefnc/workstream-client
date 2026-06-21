@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Edit, ClockAlert } from 'lucide-react';
 import { getStatusColor } from '../lib/status-helper';
 import { useAuthStore } from '../stores/authStore';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import type { Task } from '../types';
@@ -18,6 +18,7 @@ const PRIORITY_COLORS = {
 export function TaskCard({ task, onEditClick, onClick }: { task: Task; onEditClick?: (task: Task) => void; onClick?: (task: Task) => void }) {
   const { user } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const {
     attributes,
     listeners,
@@ -59,10 +60,8 @@ export function TaskCard({ task, onEditClick, onClick }: { task: Task; onEditCli
       onClick={(e) => {
         if (onClick) {
           onClick(task);
-        } else {
-          const newParams = new URLSearchParams(searchParams);
-          newParams.set('taskId', task.id);
-          setSearchParams(newParams);
+        } else if (!(e.target as HTMLElement).closest('.edit-btn')) {
+          navigate(`/tasks/${task.id}`);
         }
       }}
       {...attributes}

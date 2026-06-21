@@ -37,6 +37,7 @@ import { TaskCard } from '../components/TaskCard';
 import { ProgressModal } from '../components/task/ProgressModal';
 import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
 import type { TaskStatus, Task, User } from '../types';
+import { CreateTaskDialog } from '../components/task/CreateTaskDialog';
 
 const COLUMNS: TaskStatus[] = ['QUEUE', 'WORKING', 'CHECKING', 'REVISION', 'READY_UPLOAD', 'DONE'];
 
@@ -53,6 +54,7 @@ export default function Board() {
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [progressTask, setProgressTask] = useState<Task | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -130,8 +132,16 @@ export default function Board() {
   if (!board) return null;
 
   return (
-    <div className="flex flex-col h-full gap-6">
-      {/* Page Header (Search & Filter) */}
+    <div className="p-6 flex flex-col h-full gap-6">
+      {/* Page Header */}
+      <section className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-primary tracking-tight">Board</h2>
+          <p className="text-muted-foreground mt-1 text-sm">Visual workflow and interactive task status management.</p>
+        </div>
+      </section>
+
+      {/* Filter Bar */}
       <div className="flex flex-wrap items-center gap-3 bg-card p-4 rounded-xl border border-border">
         <div className="relative flex-1 min-w-[200px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -174,7 +184,10 @@ export default function Board() {
           <Label htmlFor="my-tasks" className="text-xs font-semibold cursor-pointer">Tugas Saya</Label>
         </div>
 
-        <button className="flex items-center gap-2 px-5 py-2 h-10 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-all shadow-sm ml-auto">
+        <button 
+          onClick={() => setIsCreateOpen(true)}
+          className="flex items-center gap-2 px-5 py-2 h-10 bg-primary text-primary-foreground rounded-xl font-semibold hover:opacity-90 transition-all shadow-sm ml-auto"
+        >
           <span className="text-lg leading-none">+</span>
           New Task
         </button>
@@ -208,6 +221,8 @@ export default function Board() {
         isOpen={!!progressTask}
         onClose={() => setProgressTask(null)}
       />
+
+      <CreateTaskDialog isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
     </div>
   );
 }
