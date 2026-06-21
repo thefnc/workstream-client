@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { useUpdateUser, User } from '../../services/users';
+import { useUpdateUser, type User } from '../../services/users';
 import { toast } from 'sonner';
 
 interface EditUserModalProps {
