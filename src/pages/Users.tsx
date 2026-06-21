@@ -30,6 +30,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from '../components/ui/dropdown-menu';
 
 import { CreateUserModal } from '../components/users/CreateUserModal';
@@ -189,18 +190,20 @@ export default function Users() {
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => setEditUser(u)}>
-                            Edit Profil
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
-                            disabled={currentUser?.id === u.id || !u.isActive}
-                            onClick={() => handleDeactivate(u.id)}
-                          >
-                            Nonaktifkan
-                          </DropdownMenuItem>
+                          <DropdownMenuGroup>
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => setEditUser(u)}>
+                              Edit Profil
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                              disabled={currentUser?.id === u.id || !u.isActive}
+                              onClick={() => handleDeactivate(u.id)}
+                            >
+                              Nonaktifkan
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
