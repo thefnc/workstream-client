@@ -597,96 +597,89 @@ Trial direction:
 
 # 18. Workload Detail Page
 
-Route:
+**Status**: [x] Completed
 
-```text
-/workload/:designerId
-```
+**Feature**: Detailed overview of specific designer's workloadw each designer:
 
-Show:
-
-* [ ] Designer profile summary
-* [ ] Active task count
-* [ ] Average progress
-* [ ] Overdue count
-* [ ] Revision count
-* [ ] Task list grouped by status
+* [x] Designer profile summary
+* [x] Active task count
+* [x] Average progress
+* [x] Overdue count
+* [x] Revision count
+* [x] Task list grouped by status
 
 Groups:
 
-* [ ] Antrian
-* [ ] Dikerjakan
-* [ ] Dicek
-* [ ] Revisi
-* [ ] Siap Upload
-* [ ] Selesai
+* [x] Antrian
+* [x] Dikerjakan
+* [x] Dicek
+* [x] Revisi
+* [x] Siap Upload
+* [x] Selesai
 
 Features:
 
-* [ ] Filter by status
-* [ ] Sort by due date
-* [ ] Click task to detail
+* [x] Filter by status
+* [x] Sort by due date
+* [x] Click task to detail
 
 Backend integration:
 
-* [ ] Fetch `/workload/:designerId`
-* [ ] Prevent Designer opening other designer detail
-* [ ] Show forbidden state if needed
-* [ ] Add loading state
-* [ ] Add error state
+* [x] Fetch `/workload/:designerId`
+* [x] Prevent Designer opening other designer detail
+* [x] Show forbidden state if needed
+* [x] Add loading state
+* [x] Add error state
 
 ---
 
 # 19. Activity / Riwayat Page
 
-Build audit log page.
+**Status**: [x] Completed
+
+**Feature**: Audit log of system activities.
 
 Show:
 
-* [ ] Timestamp
-* [ ] Actor
-* [ ] Action
-* [ ] Task reference
-* [ ] Old value
-* [ ] New value
+* [x] Timestamp
+* [x] Actor
+* [x] Action
+* [x] Task reference
+* [x] Old value
+* [x] New value
 
 Features:
 
-* [ ] Filter by action
-* [ ] Filter by user
-* [ ] Filter by task
-* [ ] Static activity data
+* [x] Filter by action
+* [x] Filter by user
+* [x] Filter by task
+* [x] Static activity data
 
 Trial direction:
 
-* [ ] Rename page title to Riwayat
-* [ ] Fetch `/activity`
-* [ ] SUPER_ADMIN sees all activity
-* [ ] DESIGNER sees own related activity
-* [ ] VIEWER sees read-only activity
-* [ ] Add pagination
-* [ ] Add loading state
-* [ ] Add error state
+* [x] Rename page title to Riwayat
+* [x] Fetch `/activity`
+* [x] SUPER_ADMIN sees all activity
+* [x] DESIGNER sees own related activity
+* [x] VIEWER sees read-only activity
+* [x] Add pagination
+* [x] Add loading state
+* [x] Add error state
 
 ---
 
 # 20. Users Page
 
-Actions:
+**Status**: [x] Completed
 
-* [ ] View only
-* [ ] No real create/edit needed for demo
+**Feature**: User management (SUPER_ADMIN only)
 
-Trial direction:
-
-* [ ] Fetch `/users`
-* [ ] Create user modal
-* [ ] Edit user modal
-* [ ] Deactivate user action
-* [ ] Hide page from Designer
-* [ ] Hide page from Viewer
-* [ ] Use username, not email
-* [ ] Show role label in Indonesian
+* [x] Edit user modal
+* [x] Deactivate user action
+* [x] Hide page from Designer
+* [x] Hide page from Viewer
+* [x] Use username, not email
+* [x] Show role label in Indonesian
 
 ---
 

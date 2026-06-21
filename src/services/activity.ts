@@ -21,12 +21,12 @@ export interface ActivityLog {
   };
 }
 
-export const useActivities = (params?: { limit?: number; page?: number }) => {
+export const useActivities = (params?: { page?: number; limit?: number; taskId?: string; userId?: string; action?: string; startDate?: string; endDate?: string }) => {
   return useQuery({
     queryKey: ['activities', params],
     queryFn: async () => {
       const { data } = await api.get('/activity', { params });
-      return data.data as { items: ActivityLog[]; total: number };
+      return data.data as { items: ActivityLog[]; meta: { totalPages: number, page: number, total: number, limit: number } };
     },
   });
 };
