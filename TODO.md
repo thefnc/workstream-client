@@ -713,7 +713,7 @@ Build reusable components:
 * [ ] ActivityTimeline
 * [ ] CommentBox
 * [ ] EmptyState
-* [ ] Toast
+* [ ] Sonner (shadcn)
 
 Trial additions:
 
