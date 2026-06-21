@@ -672,15 +672,6 @@ Trial direction:
 
 # 20. Users Page
 
-For demo only.
-
-Show table:
-
-* [ ] Name
-* [ ] Username
-* [ ] Role
-* [ ] Status
-
 Actions:
 
 * [ ] View only
@@ -701,20 +692,6 @@ Trial direction:
 
 # 21. Settings Page
 
-For demo only.
-
-Show static settings:
-
-* [ ] Categories
-* [ ] Priorities
-* [ ] Statuses
-* [ ] Pattern Sizes
-
-No real CRUD needed.
-
-Trial direction:
-
-* [ ] Hide settings page from sidebar for trial
 * [ ] Fetch categories from backend
 * [ ] Fetch priorities from backend
 * [ ] Fetch pattern sizes from backend
