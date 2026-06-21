@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUsers, useDeactivateUser, User } from '../services/users';
+import { useUsers, useDeactivateUser, type User } from '../services/users';
 import { useAuthStore } from '../stores/authStore';
 import { Loader2, Plus, MoreHorizontal, CheckCircle2, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
@@ -37,7 +37,7 @@ import { EditUserModal } from '../components/users/EditUserModal';
 
 export default function Users() {
   const currentUser = useAuthStore((state) => state.user);
-  
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [role, setRole] = useState('all');
@@ -95,10 +95,10 @@ export default function Users() {
       <div className="bg-card border border-border p-4 rounded-xl flex flex-col md:flex-row gap-4 items-end">
         <div className="space-y-1.5 w-full md:w-64">
           <label className="text-xs font-semibold text-muted-foreground">Pencarian</label>
-          <Input 
-            placeholder="Cari nama atau username..." 
-            value={search} 
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }} 
+          <Input
+            placeholder="Cari nama atau username..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           />
         </div>
 
@@ -184,11 +184,9 @@ export default function Users() {
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Buka menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
+                        <DropdownMenuTrigger className="h-8 w-8 p-0 flex items-center justify-center rounded-md hover:bg-muted text-muted-foreground transition-colors border-0 bg-transparent cursor-pointer">
+                          <span className="sr-only">Buka menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Aksi</DropdownMenuLabel>
@@ -196,7 +194,7 @@ export default function Users() {
                             Edit Profil
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
                             disabled={currentUser?.id === u.id || !u.isActive}
                             onClick={() => handleDeactivate(u.id)}
@@ -219,18 +217,18 @@ export default function Users() {
               Menampilkan Halaman {meta.page} dari {meta.totalPages} (Total: {meta.total})
             </p>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={meta.page <= 1} 
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={meta.page <= 1}
                 onClick={() => setPage(p => Math.max(1, p - 1))}
               >
                 Sebelumnya
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={meta.page >= meta.totalPages} 
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={meta.page >= meta.totalPages}
                 onClick={() => setPage(p => p + 1)}
               >
                 Selanjutnya

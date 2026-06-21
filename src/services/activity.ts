@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from './api';
-import type { Task } from '../types';
 
 export interface ActivityLog {
   id: string;
