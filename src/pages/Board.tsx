@@ -40,6 +40,8 @@ import type { TaskStatus, Task, User } from '../types';
 import { CreateTaskDialog } from '../components/task/CreateTaskDialog';
 import { LoadingState } from '../components/ui/LoadingState';
 import { ErrorState } from '../components/ui/ErrorState';
+import { EmptyState } from '../components/ui/EmptyState';
+import { PackageOpen } from 'lucide-react';
 
 const COLUMNS: TaskStatus[] = ['QUEUE', 'WORKING', 'CHECKING', 'REVISION', 'READY_UPLOAD', 'DONE'];
 
@@ -260,9 +262,12 @@ function BoardColumn({ status, tasks, onEditClick }: { status: TaskStatus; tasks
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="h-24 border-2 border-dashed border-border/60 rounded-xl flex items-center justify-center text-muted-foreground opacity-50 font-medium text-xs mt-2">
-            No tasks in {STATUS_LABELS[status]}
-          </div>
+          <EmptyState 
+            className="p-4 min-h-0 h-32 mt-2 border-2 border-dashed border-border/60 rounded-xl"
+            icon={<PackageOpen className="w-6 h-6" />}
+            title="Belum ada tugas"
+            message=""
+          />
         )}
       </div>
     </div>

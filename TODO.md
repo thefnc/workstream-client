@@ -854,16 +854,6 @@ Create empty states for:
 
 # 28. Loading States
 
-For static demo, use minimal fake loading only if needed.
-
-* [ ] Dashboard skeleton
-* [ ] Board skeleton
-* [ ] Table skeleton
-* [ ] Task detail skeleton
-* [ ] Workload skeleton
-* [ ] Activity skeleton
-* [ ] Users skeleton
-
 Trial direction:
 
 * [ ] Add real loading states for API data
@@ -920,22 +910,22 @@ Already finished:
 
 Must finish next:
 
-* [ ] Login page
-* [ ] Auth API integration
-* [ ] Protected routes
-* [ ] Role-based sidebar
-* [ ] Backend task integration
-* [ ] Tasks table
-* [ ] Task detail
-* [ ] Manual progress update via backend
-* [ ] Status update via backend
-* [ ] Comments via backend
-* [ ] Revision notes via backend
-* [ ] Tim grouped by designer
-* [ ] Tim detail per designer
-* [ ] Riwayat from backend
-* [ ] Users page for SUPER_ADMIN
-* [ ] Upload preview if time allows
+* [x] Login page
+* [x] Auth API integration
+* [x] Protected routes
+* [x] Role-based sidebar
+* [x] Backend task integration
+* [x] Tasks table
+* [x] Task detail
+* [x] Manual progress update via backend
+* [x] Status update via backend
+* [x] Comments via backend
+* [x] Revision notes via backend
+* [x] Tim grouped by designer
+* [x] Tim detail per designer
+* [x] Riwayat from backend
+* [x] Users page for SUPER_ADMIN
+* [x] Upload preview if time allows
 
 Can skip for first office trial:
 

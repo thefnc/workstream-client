@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { useActivities } from '../services/activity';
 import { useUsers } from '../services/users';
-import { Loader2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -22,6 +21,8 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
+import { EmptyState } from '../components/ui/EmptyState';
+import { LoadingState } from '../components/ui/LoadingState';
 
 export default function Activity() {
   const user = useAuthStore((state) => state.user);
@@ -116,28 +117,28 @@ export default function Activity() {
 
         <div className="space-y-1.5 w-full md:w-48">
           <label className="text-xs font-semibold text-muted-foreground">Task ID (Referensi)</label>
-          <Input 
-            placeholder="Cari Task ID..." 
-            value={taskId} 
-            onChange={(e) => { setTaskId(e.target.value); setPage(1); }} 
+          <Input
+            placeholder="Cari Task ID..."
+            value={taskId}
+            onChange={(e) => { setTaskId(e.target.value); setPage(1); }}
           />
         </div>
 
         <div className="space-y-1.5 w-full md:w-40">
           <label className="text-xs font-semibold text-muted-foreground">Dari Tanggal</label>
-          <Input 
+          <Input
             type="date"
-            value={startDate} 
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }} 
+            value={startDate}
+            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
           />
         </div>
 
         <div className="space-y-1.5 w-full md:w-40">
           <label className="text-xs font-semibold text-muted-foreground">Sampai Tanggal</label>
-          <Input 
+          <Input
             type="date"
-            value={endDate} 
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }} 
+            value={endDate}
+            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
           />
         </div>
 
@@ -159,14 +160,18 @@ export default function Activity() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-48 text-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />
+                  <TableCell colSpan={5} className="h-48 text-center p-0">
+                    <LoadingState message="Memuat riwayat aktivitas..." />
                   </TableCell>
                 </TableRow>
               ) : activities.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-48 text-center text-muted-foreground">
-                    Tidak ada aktivitas yang ditemukan.
+                  <TableCell colSpan={5} className="h-48 text-center p-0">
+                    <EmptyState
+                      title="Tidak ada riwayat"
+                      message="Tidak ada aktivitas yang ditemukan untuk filter ini."
+                      className="min-h-0 py-10"
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
@@ -213,18 +218,18 @@ export default function Activity() {
               Menampilkan Halaman {meta.page} dari {meta.totalPages} (Total: {meta.total})
             </p>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={meta.page <= 1} 
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={meta.page <= 1}
                 onClick={() => setPage(p => Math.max(1, p - 1))}
               >
                 Sebelumnya
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={meta.page >= meta.totalPages} 
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={meta.page >= meta.totalPages}
                 onClick={() => setPage(p => p + 1)}
               >
                 Selanjutnya
