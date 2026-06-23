@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import Header from './Header';
+import { PWAInstallDialog } from '../ui/PWAInstallDialog';
 
 export default function AppLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,6 +23,8 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
+      
+      <PWAInstallDialog />
     </div>
   );
 }
