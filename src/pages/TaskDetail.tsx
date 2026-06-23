@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import type { TaskStatus } from '../types';
 import { ChevronRight, Calendar, Info, FolderOpen, UploadCloud, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LoadingState } from '../components/ui/LoadingState';
+import { ErrorState } from '../components/ui/ErrorState';
 
 const PRIORITY_COLORS: Record<string, string> = {
   LOW: 'oklch(0.725 0.15 152)',
@@ -130,11 +132,11 @@ export default function TaskDetail() {
   };
 
   if (isLoading) {
-    return <div className="p-10 flex items-center justify-center text-muted-foreground min-h-[50vh]">Memuat detail task...</div>;
+    return <LoadingState message="Memuat detail task..." />;
   }
 
   if (isError || !task) {
-    return <div className="p-10 flex items-center justify-center text-destructive font-medium min-h-[50vh]">Gagal memuat tugas atau tidak ditemukan.</div>;
+    return <ErrorState message="Gagal memuat tugas atau tidak ditemukan." />;
   }
 
   return (

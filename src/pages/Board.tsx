@@ -38,12 +38,14 @@ import { ProgressModal } from '../components/task/ProgressModal';
 import { STATUS_LABELS, getStatusColor } from '../lib/status-helper';
 import type { TaskStatus, Task, User } from '../types';
 import { CreateTaskDialog } from '../components/task/CreateTaskDialog';
+import { LoadingState } from '../components/ui/LoadingState';
+import { ErrorState } from '../components/ui/ErrorState';
 
 const COLUMNS: TaskStatus[] = ['QUEUE', 'WORKING', 'CHECKING', 'REVISION', 'READY_UPLOAD', 'DONE'];
 
 export default function Board() {
   const { user } = useAuthStore();
-  const { data: board, isLoading } = useBoardTasks();
+  const { data: board, isLoading, isError } = useBoardTasks();
   const { mutate: updateStatus } = useUpdateStatus();
 
   const [search, setSearch] = useState('');
@@ -128,7 +130,8 @@ export default function Board() {
     }
   }
 
-  if (isLoading) return <div className="p-8 text-muted-foreground">Loading board...</div>;
+  if (isLoading) return <LoadingState message="Memuat board..." />;
+  if (isError) return <ErrorState message="Gagal memuat board. Periksa koneksi Anda." />;
   if (!board) return null;
 
   return (
