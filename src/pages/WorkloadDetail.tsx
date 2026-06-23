@@ -20,12 +20,15 @@ import {
 import { useAuthStore } from '../stores/authStore';
 import { useWorkload, useWorkloadDetail } from '../services/workload';
 import { useUpdateStatus } from '../services/tasks';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { TaskCard } from '../components/TaskCard';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { getStatusColor } from '../lib/status-helper';
 import type { TaskStatus, Task } from '../types';
+import { LoadingState } from '../components/ui/LoadingState';
+import { ErrorState } from '../components/ui/ErrorState';
+import { ForbiddenState } from '../components/ui/ForbiddenState';
 
 const STATUS_COLUMNS: { status: TaskStatus; label: string }[] = [
   { status: 'QUEUE', label: 'Antrian' },
@@ -41,8 +44,8 @@ export default function WorkloadDetail() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
-  const { data: workloadList, isLoading: isLoadingList } = useWorkload();
-  const { data: detailTasks, isLoading: isLoadingDetail } = useWorkloadDetail(designerId);
+  const { data: workloadList, isLoading: isLoadingList, isError: isErrorList } = useWorkload();
+  const { data: detailTasks, isLoading: isLoadingDetail, isError: isErrorDetail } = useWorkloadDetail(designerId);
   const { mutate: updateStatus } = useUpdateStatus();
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -54,25 +57,21 @@ export default function WorkloadDetail() {
 
   // Proteksi role: Designer hanya bisa melihat halamannya sendiri
   if (user?.role === 'DESIGNER' && user?.id !== designerId) {
-    return <Navigate to="/dashboard" replace />;
+    return <ForbiddenState message="Anda hanya dapat melihat beban kerja Anda sendiri." />;
   }
 
   if (isLoadingList || isLoadingDetail) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <LoadingState message="Memuat detail beban kerja..." />;
+  }
+
+  if (isErrorList || isErrorDetail) {
+    return <ErrorState message="Gagal memuat beban kerja. Periksa koneksi Anda." />;
   }
 
   const profile = workloadList?.find((w) => w.designerId === designerId);
 
   if (!profile) {
-    return (
-      <div className="p-6 text-center text-muted-foreground">
-        Data desainer tidak ditemukan.
-      </div>
-    );
+    return <ErrorState title="Tidak Ditemukan" message="Data desainer tidak ditemukan." />;
   }
 
   function handleDragStart(event: DragStartEvent) {

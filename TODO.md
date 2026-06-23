@@ -685,10 +685,10 @@ Trial direction:
 
 # 21. Settings Page
 
-* [ ] Fetch categories from backend
-* [ ] Fetch priorities from backend
-* [ ] Fetch pattern sizes from backend
-* [ ] Use settings API only for select options
+* [x] Fetch categories from backend
+* [x] Fetch priorities from backend
+* [x] Fetch pattern sizes from backend
+* [x] Use settings API only for select options
 
 ---
 
@@ -696,24 +696,24 @@ Trial direction:
 
 Build reusable components:
 
-* [ ] AppShell
-* [ ] Sidebar
-* [ ] Topbar
-* [ ] PageHeader
-* [ ] MetricCard
-* [ ] KanbanBoard
-* [ ] KanbanColumn
-* [ ] TaskCard
-* [ ] ProgressBar
-* [ ] StatusBadge
-* [ ] PriorityBadge
-* [ ] TaskDetailPanel
-* [ ] DataTable
-* [ ] WorkloadCard
-* [ ] ActivityTimeline
-* [ ] CommentBox
-* [ ] EmptyState
-* [ ] Sonner (shadcn)
+* [x] AppShell
+* [x] Sidebar
+* [x] Topbar
+* [x] PageHeader
+* [x] MetricCard
+* [x] KanbanBoard
+* [x] KanbanColumn
+* [x] TaskCard
+* [x] ProgressBar
+* [x] StatusBadge
+* [x] PriorityBadge
+* [x] TaskDetailPanel
+* [x] DataTable
+* [x] WorkloadCard
+* [x] ActivityTimeline
+* [x] CommentBox
+* [x] EmptyState
+* [x] Sonner (shadcn)
 
 Trial additions:
 
@@ -722,11 +722,11 @@ Trial additions:
 * [x] LoginForm
 * [x] LogoutButton
 * [x] UserRoleBadge
-* [ ] ForbiddenState
-* [ ] LoadingState
-* [ ] ErrorState
-* [ ] PatternSizeBadge
-* [ ] PermissionTooltip
+* [x] ForbiddenState
+* [x] LoadingState
+* [x] ErrorState
+* [x] PatternSizeBadge
+* [x] PermissionTooltip
 
 ---
 
@@ -736,25 +736,25 @@ Use Zustand for demo state.
 
 Stores:
 
-* [ ] `useTaskStore`
-* [ ] `useFilterStore`
-* [ ] `useUiStore`
+* [x] `useTaskStore` (Removed)
+* [x] `useFilterStore`
+* [x] `useUiStore`
 
 Task store features:
 
-* [ ] Store static tasks
-* [ ] Update task status
-* [ ] Update task progress
-* [ ] Add progress log
-* [ ] Add comment
-* [ ] Add revision note
+* [x] Store static tasks
+* [x] Update task status
+* [x] Update task progress
+* [x] Add progress log
+* [x] Add comment
+* [x] Add revision note
 
 Trial direction:
 
-* [ ] Move server data to TanStack Query
-* [ ] Keep Zustand only for UI state
-* [ ] Keep filters in Zustand if needed
-* [ ] Remove task mutation from Zustand after backend integration
+* [x] Move server data to TanStack Query
+* [x] Keep Zustand only for UI state
+* [x] Keep filters in Zustand if needed
+* [x] Remove task mutation from Zustand after backend integration
 
 ---
 
@@ -765,19 +765,19 @@ New for trial.
 * [x] Create Axios instance
 * [x] Set `VITE_API_URL`
 * [x] Enable `withCredentials`
-* [ ] Create response interceptor
-* [ ] Handle 401 globally
-* [ ] Setup TanStack Query provider
-* [ ] Create query keys
-* [ ] Create auth service
-* [ ] Create tasks service
-* [ ] Create dashboard service
-* [ ] Create workload service
-* [ ] Create activity service
-* [ ] Create users service
-* [ ] Create settings service
-* [ ] Create notifications service
-* [ ] Create upload service
+* [x] Create response interceptor
+* [x] Handle 401 globally
+* [x] Setup TanStack Query provider
+* [x] Create query keys
+* [x] Create auth service
+* [x] Create tasks service
+* [x] Create dashboard service
+* [x] Create workload service
+* [x] Create activity service
+* [x] Create users service
+* [x] Create settings service
+* [x] Create notifications service
+* [x] Create upload service
 
 ---
 
