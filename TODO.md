@@ -854,16 +854,6 @@ Create empty states for:
 
 # 28. Loading States
 
-For static demo, use minimal fake loading only if needed.
-
-* [ ] Dashboard skeleton
-* [ ] Board skeleton
-* [ ] Table skeleton
-* [ ] Task detail skeleton
-* [ ] Workload skeleton
-* [ ] Activity skeleton
-* [ ] Users skeleton
-
 Trial direction:
 
 * [ ] Add real loading states for API data
