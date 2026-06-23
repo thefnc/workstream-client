@@ -15,10 +15,12 @@ const PRIORITY_COLORS = {
   URGENT: 'oklch(0.485 0.18 290)',
 };
 
-export function TaskCard({ task, onEditClick, onClick }: { task: Task; onEditClick?: (task: Task) => void; onClick?: (task: Task) => void }) {
+export function TaskCard({ task, onEditClick, onClick, isDraggable = true }: { task: Task; onEditClick?: (task: Task) => void; onClick?: (task: Task) => void; isDraggable?: boolean }) {
   const { user } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  // Conditionally disable sortable by passing a disabled flag
   const {
     attributes,
     listeners,
@@ -32,6 +34,7 @@ export function TaskCard({ task, onEditClick, onClick }: { task: Task; onEditCli
       type: 'Task',
       task,
     },
+    disabled: !isDraggable,
   });
 
   const isOverdue = task.dueDate ? new Date(task.dueDate) < new Date() && task.status !== 'DONE' : false;
@@ -52,10 +55,11 @@ export function TaskCard({ task, onEditClick, onClick }: { task: Task; onEditCli
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isDraggable ? setNodeRef : undefined}
       style={style}
-      className={`bg-card border border-border rounded-xl p-4 shadow-sm group relative flex flex-col gap-3 transition-all cursor-pointer
-        ${isEditable ? 'hover:shadow-md hover:border-primary/30 active:cursor-grabbing' : 'grayscale-[20%]'}
+      className={`bg-card border border-border rounded-xl p-4 shadow-sm group relative flex flex-col gap-3 transition-all ${onClick || !isDraggable ? 'cursor-pointer' : ''}
+        ${isEditable && isDraggable ? 'hover:shadow-md hover:border-primary/30 active:cursor-grabbing' : ''}
+        ${!isEditable ? 'grayscale-[20%]' : ''}
         ${isDragging ? 'z-50 shadow-xl ring-2 ring-primary/20 scale-[1.02] cursor-grabbing' : ''}`}
       onClick={(e) => {
         if (onClick) {
@@ -64,8 +68,8 @@ export function TaskCard({ task, onEditClick, onClick }: { task: Task; onEditCli
           navigate(`/tasks/${task.id}`);
         }
       }}
-      {...attributes}
-      {...listeners}
+      {...(isDraggable ? attributes : {})}
+      {...(isDraggable ? listeners : {})}
     >
       {!isEditable && (
         <div className="absolute top-2 right-2 flex items-center justify-center bg-background/80 backdrop-blur-[2px] w-6 h-6 rounded-full z-10" title="Read Only">

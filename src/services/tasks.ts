@@ -113,6 +113,7 @@ export const useUpdateStatus = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboardSummary'] });
+      queryClient.invalidateQueries({ queryKey: ['workload'] });
     },
   });
 };
